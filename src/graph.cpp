@@ -23,6 +23,15 @@ void Graph::addEdge(int src, int dest, int weight){
     adj[src].push_back({dest, weight});
 }
 
+// Funkcija getEdgeIds vraca sve grane grafa. Cuva ih u strukturi edges.
+void Graph::getEdgeIds(std::vector<EdgeId>& edges){
+    for(int i = 0; i < adj.size(); ++i){
+        for(auto edge : adj[i]){
+            edges.push_back({i, edge.dest, edge.weight});
+        }
+    }
+}
+
 void Graph::printGraph() const{
     if(size() == 0){
         printf("null\n");

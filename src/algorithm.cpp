@@ -3,6 +3,7 @@
 #include <iostream>
 #include <climits>
 #include <boost/heap/fibonacci_heap.hpp>
+#include <math.h>
 #include "algorithm.hpp"
 
 // Funkcija widestPathBruteForce vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
@@ -260,5 +261,20 @@ int median_of_medians(int* a, int n , int k){
 // Funkcija widestPathInUndirectedGraph vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 // Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
-    return {};
+    double logNumOfEdges = 0;
+    int numOfEdges = 0;
+    int iterationCount = 0;
+    Path wpath;
+
+    for(int i =0; i < g.size(); ++i){
+        numOfEdges += g[i].size();
+    }
+    numOfEdges = numOfEdges / 2;
+    logNumOfEdges = log(numOfEdges) / log(2);
+
+    for(iterationCount = 0; iterationCount < logNumOfEdges + 1; ++iterationCount){
+        //int M = median_of_medians()
+    }
+
+    return wpath;
 }

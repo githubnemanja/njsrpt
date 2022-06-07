@@ -8,11 +8,23 @@ typedef  std::deque<int> Queue;
 
 typedef  std::deque<int> Path;
 
+// Koristi se u listi susedstava cvora grafa
 struct Edge{
     int dest;
     int weight;
 
     Edge(int dest, int weight): dest(dest), weight(weight) {}
+};
+
+// Kompletan identifikator grane grafa
+struct EdgeId{
+    int src;
+    int dest;
+    int weight;
+
+    EdgeId(int src, int dest, int weight)
+        : src(src), dest(dest), weight(weight)
+        {}
 };
 
 class Graph{
@@ -22,6 +34,7 @@ class Graph{
     std::vector<Edge>& operator[] (int index);
     const std::vector<Edge>& operator[] (int index) const;
     void addEdge(int src, int dest, int weight);
+    void getEdgeIds(std::vector<EdgeId>& edges);
     void printGraph() const;
     void findPath(int src, int dest, Path& path) const;
     void findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const;
