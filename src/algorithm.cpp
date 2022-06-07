@@ -6,20 +6,6 @@
 #include <utility>
 #include <iostream>
 
-void printPath(Path p){
-    bool fst = true;
-    for(auto i = p.begin(); i != p.end(); ++i){
-        if(fst){
-            fst = false;
-        }
-        else{
-            std::cout << "->";
-        }
-        std::cout << *i;
-    }
-    std::cout << std::endl;
-}
-
 struct node
 {
     int key;

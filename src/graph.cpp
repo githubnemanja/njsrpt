@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include "graph.hpp"
 
 Graph::Graph(int size){
@@ -75,5 +76,26 @@ void BFS(const Graph& g, int src){
                 q.push_back(cur.dest);
             }
         }
+    }
+}
+
+void printPath(const Path& p){
+    bool fst = true;
+    for(auto i = p.begin(); i != p.end(); ++i){
+        if(fst){
+            fst = false;
+        }
+        else{
+            std::cout << "->";
+        }
+        std::cout << *i;
+    }
+    std::cout << std::endl;
+}
+
+void printPaths(const std::deque<std::pair<Path, int>>& paths){
+    for(auto i = paths.cbegin(); i != paths.cend(); ++i){
+        std::cout << "[minEdge]:" << i->second << ", [path]:";
+        printPath(i->first);
     }
 }

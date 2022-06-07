@@ -27,8 +27,12 @@ typedef  std::deque<int> Queue;
 
 typedef  std::deque<int> Path;
 
-void DFS(const Graph& g, int s, int * visited);
+void DFS(const Graph& g, int src, int * visited);
 
 void BFS(const Graph& g, int src);
+
+void printPath(const Path& p);
+
+void printPaths(const std::deque<std::pair<Path, int>>& paths);
 
 #endif
