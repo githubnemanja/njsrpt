@@ -2,40 +2,27 @@
 #define __GRAPH_HPP__
 
 #include <deque>
+#include <vector>
 
-typedef struct AdjListNode{
+struct Edge{
     int dest;
     int weight;
-    struct AdjListNode * next;
-}AdjListNode;
 
-typedef struct AdjList{
-    AdjListNode * head;
-}AdjList;
+    Edge(int dest, int weight): dest(dest), weight(weight) {}
+};
 
-typedef struct Graph{
-    int size;
-    AdjList * adj;
-}Graph;
+typedef std::vector<std::vector<Edge>> Graph;
 
 typedef  std::deque<int> Queue;
 
 typedef  std::deque<int> Path;
 
-AdjListNode * newAdjListNode(int dest, int weight);
+void addEdge(Graph& g, int src, int dest, int weight);
 
-void freeAdjList(AdjList list);
+void printGraph(const Graph& g);
 
-Graph * newGraph(int size);
+void DFS(const Graph& g, int s, int * visited);
 
-void addEdge(Graph * g, int src, int dest, int weight);
-
-void printGraph(Graph * g);
-
-void freeGraph(Graph * g);
-
-void DFS(Graph * g, int s, int * visited);
-
-void BFS(Graph * g, int src);
+void BFS(const Graph& g, int src);
 
 #endif

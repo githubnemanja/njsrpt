@@ -38,10 +38,8 @@ struct compare_node
     }
 };
 
-void DFS_fp(Graph * g, int src, int dest, int * visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge){
-    AdjListNode * cur = NULL;
-
-    if(g == NULL || visited == NULL){
+void DFS_fp(const Graph& g, int src, int dest, bool * visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge){
+    if(visited == NULL){
         return;
     }
 
@@ -51,11 +49,11 @@ void DFS_fp(Graph * g, int src, int dest, int * visited, Path p, std::deque<std:
         paths.push_back(std::make_pair(p, minEdge));
     }
     else{
-        for(cur = g->adj[src].head; cur != NULL; cur = cur->next){
-            if(visited[cur->dest] == 0){
-                p.push_back(cur->dest);
-                DFS_fp(g, cur->dest, dest, visited, p, paths, 
-                        minEdge < cur->weight ? minEdge : cur->weight);
+        for(auto & cur : g[src]){
+            if(visited[cur.dest] == 0){
+                p.push_back(cur.dest);
+                DFS_fp(g, cur.dest, dest, visited, p, paths, 
+                        minEdge < cur.weight ? minEdge : cur.weight);
                 p.pop_back();
             }
         }
@@ -64,37 +62,22 @@ void DFS_fp(Graph * g, int src, int dest, int * visited, Path p, std::deque<std:
     visited[src] = 0;
 }
 
-void findPaths(Graph * g, int src, int dest, std::deque<std::pair<Path, int>>& paths){
+void findPaths(const Graph& g, int src, int dest, std::deque<std::pair<Path, int>>& paths){
     Path p;
-    int * visited = NULL;
     int i = 0;
-
-    if(g == NULL){
-        return;
-    }
-
-    visited = (int*)malloc(g->size*sizeof(int));
-    for(i = 0; i < g->size; ++i){
-        visited[i] = 0;
-    }
+    bool visited[g.size()] = {false};
 
     p.push_back(src);
 
     DFS_fp(g, src, dest, visited, p, paths, INT_MAX);
-
-    free(visited);
 }
 
-Path widestPathBruteForce(Graph * g, int src, int dest){
+Path widestPathBruteForce(const Graph& g, int src, int dest){
     std::deque<std::pair<Path, int>> paths;
     Path p;
     Path maxPath;
     int maxEdge = INT_MIN;
     int curEdge = 0;
-
-    if(g == NULL){
-        return p;
-    }
 
     findPaths(g, src, dest, paths);
 
@@ -112,24 +95,13 @@ Path widestPathBruteForce(Graph * g, int src, int dest){
     return maxPath;
 }
 
-Path widestPathDijkstra(Graph * g, int src, int dest){
+Path widestPathDijkstra(const Graph& g, int src, int dest){
     int v = 0;
-    int distance_from_src[g->size];
-    int pred[g->size];
-    bool visited[g->size];
-    AdjListNode * cur = NULL;
-    node * min = NULL;
+    int distance_from_src[g.size()] = {INT_MIN};
+    int pred[g.size()];
+    bool visited[g.size()] = {false};
     boost::heap::fibonacci_heap<node, boost::heap::compare<compare_node>> heap;
     Path path;
-
-    if(g == NULL){
-        return {};
-    }
-
-    for(v = 0; v < g->size; ++v){
-        distance_from_src[v] = INT_MIN;
-        visited[v] = false;
-    }
 
     visited[src] = true;
     distance_from_src[src] = INT_MAX;
@@ -139,13 +111,13 @@ Path widestPathDijkstra(Graph * g, int src, int dest){
         v = heap.top().val;
         heap.pop();
         visited[v] = true;
-        for(cur = g->adj[v].head; cur != NULL; cur = cur->next){
-            if(visited[cur->dest] == false){
-                if(distance_from_src[cur->dest] < distance_from_src[v] && distance_from_src[cur->dest] < cur->weight){
-                    distance_from_src[cur->dest] = distance_from_src[v] < cur->weight ? distance_from_src[v] : cur->weight;
-                    pred[cur->dest] = v;
+        for(auto & cur : g[v]){
+            if(visited[cur.dest] == false){
+                if(distance_from_src[cur.dest] < distance_from_src[v] && distance_from_src[cur.dest] < cur.weight){
+                    distance_from_src[cur.dest] = distance_from_src[v] < cur.weight ? distance_from_src[v] : cur.weight;
+                    pred[cur.dest] = v;
                 }
-                heap.push({distance_from_src[cur->dest], cur->dest});
+                heap.push({distance_from_src[cur.dest], cur.dest});
             }
         }
     }
@@ -162,21 +134,12 @@ Path widestPathDijkstra(Graph * g, int src, int dest){
     return path;
 }
 
-Path widestPathKnowingBottleneck(Graph * g, int src, int dest, int bottleneck){
+Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck){
     int v = 0;
-    int pred[g->size];
-    bool visited[g->size];
-    AdjListNode * cur = NULL;
+    int pred[g.size()];
+    bool visited[g.size()] = {false};
     Queue  q;
     Path path;
-
-    if(g == NULL){
-        return {};
-    }
-
-    for(v = 0; v < g->size; ++v){
-        visited[v] = false;
-    }
 
     visited[src] = true;
 
@@ -185,11 +148,11 @@ Path widestPathKnowingBottleneck(Graph * g, int src, int dest, int bottleneck){
     while(!q.empty()){
         v = q.front();
         q.pop_front();
-        for(cur = g->adj[v].head; cur != NULL; cur = cur->next){
-            if(visited[cur->dest] == false && cur->weight >= bottleneck){
-                visited[cur->dest] = true; 
-                pred[cur->dest] = v;
-                q.push_back(cur->dest);
+        for(auto & cur : g[v]){
+            if(visited[cur.dest] == false && cur.weight >= bottleneck){
+                visited[cur.dest] = true; 
+                pred[cur.dest] = v;
+                q.push_back(cur.dest);
             }
         }
     }
@@ -208,26 +171,18 @@ Path widestPathKnowingBottleneck(Graph * g, int src, int dest, int bottleneck){
     return path;
 }
 
-Path widestPathMedianEdgeWeight(Graph * g, int src, int dest){
+Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     int minEdge = INT_MAX;
     int maxEdge = INT_MIN;
     int l = 0;
     int r = 0;
     int m = 0;
     int v = 0;
-    int visited[g->size];
+    bool visited[g.size()] = {false};
     Path path, curPath;
-    AdjListNode * cur = NULL;
     Queue q;
 
-    if(g == NULL){
-        return {};
-    }
-
     //find minEdge, maxEdge
-    for(v = 0; v < g->size; ++v){
-        visited[v] = 0;
-    }
 
     visited[src] = 1;
 
@@ -236,16 +191,16 @@ Path widestPathMedianEdgeWeight(Graph * g, int src, int dest){
     while(!q.empty()){
         v = q.front();
         q.pop_front();
-        for(cur = g->adj[v].head; cur != NULL; cur = cur->next){
-            if(minEdge > cur->weight){
-                minEdge = cur->weight;
+        for(auto & cur : g[v]){
+            if(minEdge > cur.weight){
+                minEdge = cur.weight;
             }
-            if(maxEdge < cur->weight){
-                maxEdge = cur->weight;
+            if(maxEdge < cur.weight){
+                maxEdge = cur.weight;
             }
-            if(visited[cur->dest] == 0){
-                visited[cur->dest] = 1;
-                q.push_back(cur->dest);
+            if(visited[cur.dest] == 0){
+                visited[cur.dest] = 1;
+                q.push_back(cur.dest);
             }
         }
     }

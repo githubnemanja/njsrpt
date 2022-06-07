@@ -2,124 +2,49 @@
 #include <stdlib.h>
 #include "graph.hpp"
 
-AdjListNode * newAdjListNode(int dest, int weight){
-    AdjListNode * _new = NULL;
-
-    _new = (AdjListNode*)malloc(sizeof(AdjListNode));
-    _new->dest = dest;
-    _new->weight = weight;
-    _new->next = NULL;
-
-    return _new;
+void addEdge(Graph& g, int src, int dest, int weight){
+    g[src].push_back({dest, weight});
 }
 
-void freeAdjList(AdjList list){
-    AdjListNode * prev = NULL;
-    AdjListNode * cur  = NULL;
-
-    prev = list.head;
-    while(prev != NULL){
-        cur = prev->next;
-        free(prev);
-        prev = cur;
-    }
-}
-
-Graph * newGraph(int size){
-    int i = 0;
-    Graph * g = NULL;
-
-    g = (Graph*)malloc(sizeof(Graph));
-    g->size = size;
-    g->adj = (AdjList*)malloc(size*sizeof(AdjList));
-
-    for(i = 0; i < size; ++i){
-        g->adj[i].head = NULL;
-    }
-
-    return g;
-}
-
-void addEdge(Graph * g, int src, int dest, int weight){
-    AdjListNode * _new = NULL;
-
-    if(g == NULL){
-        return;
-    }
-    
-    _new = newAdjListNode(dest, weight);
-    _new->next = g->adj[src].head;
-    g->adj[src].head = _new;
-}
-
-void printGraph(Graph * g){
-    int i = 0;
-    AdjListNode * cur = NULL;
-
-    if(g == NULL){
+void printGraph(const Graph& g){
+    if(g.size() == 0){
         printf("null\n");
         return;
     }
 
     printf("GRAPH edges: (src, dest) = weight\n");
 
-    for(i=0; i<g->size; ++i){
-        for(cur = g->adj[i].head; cur != NULL; cur = cur->next){
-            printf("(%d, %d) = %d\t", i, cur->dest, cur->weight);
+    for(int i = 0; i < g.size(); ++i){
+        for(auto & edge : g[i]){
+            printf("(%d, %d) = %d\t", i, edge.dest, edge.weight);
         }
     }
 
     printf("\n--------------------------------\n");
 }
 
-void freeGraph(Graph * g){
-    int i = 0;
-
-    if(g == NULL){
+void DFS(const Graph& g, int src, int * visited){
+    if(visited == NULL){
         return;
     }
 
-    for(i = 0; i < g->size; ++i){
-        freeAdjList(g->adj[i]);
-    }
-    free(g->adj);
-    free(g);
-}
+    visited[src] = 1;
+    printf("%d\n", src);
 
-void DFS(Graph * g, int s, int * visited){
-    int i = 0;
-    AdjListNode * cur = NULL;
-
-    if(g == NULL || visited == NULL){
-        return;
-    }
-
-    visited[s] = 1;
-    printf("%d\n", s);
-
-    for(cur = g->adj[s].head; cur != NULL; cur = cur->next){
-        if(visited[cur->dest] == 0){
-            DFS(g, cur->dest, visited);
-            printf("(%d, %d)\n", s, cur->dest);
+    for(auto & cur : g[src]){
+        if(visited[cur.dest] == 0){
+            DFS(g, cur.dest, visited);
+            printf("(%d, %d)\n", src, cur.dest);
         }
     }
 }
 
-void BFS(Graph * g, int src){
+void BFS(const Graph& g, int src){
     int v = 0;
-    int * visited = NULL;
-    AdjListNode * cur = NULL;
     Queue q;
+    bool visited[g.size()] = {false};
 
-    if(g == NULL){
-        return;
-    }
-
-    visited = (int*)malloc(g->size*sizeof(int));
-    for(v = 0; v < g->size; ++v){
-        visited[v] = 0;
-    }
-    visited[src] = 1;
+    visited[src] = true;
 
     q.push_back(src);
 
@@ -127,11 +52,11 @@ void BFS(Graph * g, int src){
         v = q.front();
         q.pop_front();
         printf("%d\n", v);
-        for(cur = g->adj[v].head; cur != NULL; cur = cur->next){
-            if(visited[cur->dest] == 0){
-                visited[cur->dest] = 1;
-                printf("(%d,%d)\n", v, cur->dest);
-                q.push_back(cur->dest);
+        for(auto & cur : g[v]){
+            if(visited[cur.dest] == false){
+                visited[cur.dest] = true;
+                printf("(%d,%d)\n", v, cur.dest);
+                q.push_back(cur.dest);
             }
         }
     }
