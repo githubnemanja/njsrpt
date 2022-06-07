@@ -40,16 +40,44 @@ void Graph::printGraph() const{
     printf("\n--------------------------------\n");
 }
 
-void DFS(const Graph& g, int src, int * visited){
-    if(visited == NULL){
-        return;
+void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp){
+    visited[src] = true;
+    comp[src] = comp_id;
+
+    for(auto & cur : adj[src]){
+        if(visited[cur.dest] == false){
+            connected_components_dfs(cur.dest, visited, comp_id, comp);
+        }
+    }
+}
+
+// The connected_components() functions compute the connected components of
+// an undirected graph using a DFS-based approach. A connected component of
+// an undirected graph is a set of vertices that are all reachable from each other.
+// The output of the algorithm is recorded in the component property map comp,
+// which will contain numbers giving the component number assigned to each vertex.
+// The total number of components is the return value of the function.
+int Graph::connected_components(std::vector<int>& comp){
+    int comp_id = 0;
+    std::vector<bool> visited(size(), false);
+
+    for(int i = 0; i < size(); ++i){
+        if(!visited[i]){
+            connected_components_dfs(i, visited, comp_id, comp);
+            comp_id++;
+        }
     }
 
-    visited[src] = 1;
+    return comp_id;
+}
+
+
+void DFS(const Graph& g, int src, std::vector<bool>& visited){
+    visited[src] = true;
     printf("%d\n", src);
 
     for(auto & cur : g[src]){
-        if(visited[cur.dest] == 0){
+        if(visited[cur.dest] == false){
             DFS(g, cur.dest, visited);
             printf("(%d, %d)\n", src, cur.dest);
         }

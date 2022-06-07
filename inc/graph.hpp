@@ -19,8 +19,12 @@ class Graph{
     const std::vector<Edge>& operator[] (int index) const;
     void addEdge(int src, int dest, int weight);
     void printGraph() const;
+    int connected_components(std::vector<int>& com);
 
     std::vector<std::vector<Edge>> adj;
+
+    private:
+    void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp);
 };
 
 typedef  std::deque<int> Queue;
