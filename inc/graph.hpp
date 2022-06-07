@@ -11,15 +11,21 @@ struct Edge{
     Edge(int dest, int weight): dest(dest), weight(weight) {}
 };
 
-typedef std::vector<std::vector<Edge>> Graph;
+class Graph{
+    public:
+    Graph(int size);
+    int size() const;
+    std::vector<Edge>& operator[] (int index);
+    const std::vector<Edge>& operator[] (int index) const;
+    void addEdge(int src, int dest, int weight);
+    void printGraph() const;
+
+    std::vector<std::vector<Edge>> adj;
+};
 
 typedef  std::deque<int> Queue;
 
 typedef  std::deque<int> Path;
-
-void addEdge(Graph& g, int src, int dest, int weight);
-
-void printGraph(const Graph& g);
 
 void DFS(const Graph& g, int s, int * visited);
 

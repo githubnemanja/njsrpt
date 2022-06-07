@@ -2,20 +2,36 @@
 #include <stdlib.h>
 #include "graph.hpp"
 
-void addEdge(Graph& g, int src, int dest, int weight){
-    g[src].push_back({dest, weight});
+Graph::Graph(int size){
+    adj.resize(size);
 }
 
-void printGraph(const Graph& g){
-    if(g.size() == 0){
+int Graph::size() const{
+    return adj.size();
+}
+
+std::vector<Edge>& Graph::operator[] (int index){
+    return adj[index];
+}
+
+const std::vector<Edge>& Graph::operator[] (int index) const{
+    return adj[index];
+}
+
+void Graph::addEdge(int src, int dest, int weight){
+    adj[src].push_back({dest, weight});
+}
+
+void Graph::printGraph() const{
+    if(size() == 0){
         printf("null\n");
         return;
     }
 
     printf("GRAPH edges: (src, dest) = weight\n");
 
-    for(int i = 0; i < g.size(); ++i){
-        for(auto & edge : g[i]){
+    for(int i = 0; i < size(); ++i){
+        for(auto & edge : adj[i]){
             printf("(%d, %d) = %d\t", i, edge.dest, edge.weight);
         }
     }

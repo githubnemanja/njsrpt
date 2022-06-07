@@ -5,35 +5,35 @@
 #include "graph.hpp"
 #include "algorithm.hpp"
 
-void populateGraph1(Graph& g, int size){
-    if(size < 5){
+void populateGraph1(Graph& g){
+    if(g.size() < 5){
         return;
     }
-    addEdge(g, 0, 1, 1);
-    addEdge(g, 0, 2, 2);
-    addEdge(g, 2, 1, 2);
-    addEdge(g, 1, 0, 2);
-    addEdge(g, 2, 4, 200);
-    addEdge(g, 4, 3, 200);
-    addEdge(g, 3, 1, 200);
+    g.addEdge(0, 1, 1);
+    g.addEdge(0, 2, 2);
+    g.addEdge(2, 1, 2);
+    g.addEdge(1, 0, 2);
+    g.addEdge(2, 4, 200);
+    g.addEdge(4, 3, 200);
+    g.addEdge(3, 1, 200);
 }
 
-void populateGraph2(Graph& g, int size){
-    for(int i = 2; i < size; ++i){
-        addEdge(g, i, i - 1, 10);
+void populateGraph2(Graph& g){
+    for(int i = 2; i < g.size(); ++i){
+        g.addEdge(i, i - 1, 10);
     }
-    for(int i = 2; i < size; ++i){
-        addEdge(g, 0, i, i);
+    for(int i = 2; i < g.size(); ++i){
+        g.addEdge(0, i, i);
     }
 }
 
-void populateGraph3(Graph& g, int size){
+void populateGraph3(Graph& g){
     srand(time(0));
 
-    for(int i = 0; i < size; ++i){
-        for(int j = 0; j < size; ++j){
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = 0; j < g.size(); ++j){
             if(i != j){
-                addEdge(g, i, j, rand());
+                g.addEdge(i, j, rand());
             }
         }
     }
@@ -77,10 +77,9 @@ void runTests(Graph& g, int src, int dest){
 }
 
 int main(){
-    int size = 11;
-    Graph g = std::vector<std::vector<Edge>>(size);
+    Graph g(11);
 
-    populateGraph3(g, size);
+    populateGraph3(g);
 
     runTests(g, 0, 1);
 
