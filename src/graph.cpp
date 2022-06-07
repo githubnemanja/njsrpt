@@ -7,6 +7,10 @@ Graph::Graph(int size){
     adj.resize(size);
 }
 
+Graph::Graph(const Graph& g){
+    adj = g.adj;
+}
+
 int Graph::size() const{
     return adj.size();
 }
@@ -23,8 +27,26 @@ void Graph::addEdge(int src, int dest, int weight){
     adj[src].push_back({dest, weight});
 }
 
+// Modify graph to remove all edges which weight is smaller than bottleneck
+void Graph::deleteEdges(int bottleneck){
+    for(int i = 0; i < size(); ++i){
+        int new_size = adj[i].size();
+        for(int j = 0; j < new_size; ++j){
+            if(adj[i][j].weight < bottleneck){
+                // cur edge is for delete
+                // swap cur edge with last edge
+                swap(adj[i][j], adj[i][new_size - 1]);
+                // resize to delete last edge
+                new_size--;
+            }
+        }
+        adj[i].resize(new_size);
+    }
+}
+
+
 // Funkcija getEdgeIds vraca sve grane grafa. Cuva ih u strukturi edges.
-void Graph::getEdgeIds(std::vector<EdgeId>& edges){
+void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
     for(int i = 0; i < adj.size(); ++i){
         for(auto edge : adj[i]){
             edges.push_back({i, edge.dest, edge.weight});
@@ -117,12 +139,26 @@ void Graph::findPath(int src, int dest, Path& path) const{
     }
 }
 
+// Funkcija connected_components_dfs se koristi kao pomocna za connected_components
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;
     comp[src] = comp_id;
 
     for(auto & cur : adj[src]){
         if(visited[cur.dest] == false){
+            connected_components_dfs(cur.dest, visited, comp_id, comp);
+        }
+    }
+}
+
+// Funkcija connected_components_dfs se koristi kao pomocna za connected_components
+// Algoritam ignorise grane manje od bottleneck
+void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const{
+    visited[src] = true;
+    comp[src] = comp_id;
+
+    for(auto & cur : adj[src]){
+        if(visited[cur.dest] == false && cur.weight >= bottleneck){
             connected_components_dfs(cur.dest, visited, comp_id, comp);
         }
     }
@@ -140,6 +176,26 @@ int Graph::connected_components(std::vector<int>& comp) const{
     for(int i = 0; i < size(); ++i){
         if(!visited[i]){
             connected_components_dfs(i, visited, comp_id, comp);
+            comp_id++;
+        }
+    }
+
+    return comp_id;
+}
+
+// Funkcija connected_components() pronalazi povezane komponente u neusmerenom grafu
+// koristeci DFS pristup. Povezana komponenta je skup cvorova koji su svi dostizni
+// medju sobom. Rezultat algoritma se cuva u strukturi comp, koja predstavlja niz
+// u kome je id komponente dodeljen indeksu cvora. Funkcija connected_components
+// vraca ukupan broj komponenti kao return.
+// Algoritam ignorise grane manje od bottleneck
+int Graph::connected_components(int bottleneck, std::vector<int>& comp) const{
+    int comp_id = 0;
+    std::vector<bool> visited(size(), false);
+
+    for(int i = 0; i < size(); ++i){
+        if(!visited[i]){
+            connected_components_dfs(i, visited, bottleneck, comp_id, comp);
             comp_id++;
         }
     }
@@ -202,4 +258,32 @@ void printPaths(const std::vector<std::pair<Path, int>>& paths){
         std::cout << "[minEdge]:" << i->second << ", [path]:";
         printPath(i->first);
     }
+}
+
+void swap(Edge& e1, Edge& e2){
+    int tmp;
+
+    tmp = e1.dest;
+    e1.dest = e2.dest;
+    e2.dest = tmp;
+
+    tmp = e1.weight;
+    e1.weight = e2.weight;
+    e2.weight = tmp;
+}
+
+void swap(EdgeId& e1, EdgeId& e2){
+    int tmp;
+
+    tmp = e1.src;
+    e1.src = e2.src;
+    e2.src = tmp;
+
+    tmp = e1.dest;
+    e1.dest = e2.dest;
+    e2.dest = tmp;
+
+    tmp = e1.weight;
+    e1.weight = e2.weight;
+    e2.weight = tmp;
 }

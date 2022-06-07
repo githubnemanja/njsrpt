@@ -13,6 +13,7 @@ struct HeapNode{
     { }
 };
 
+// Koristi se za uporedjivanje objekata EdgeId
 // Koristi se za deklaraciju boost::heap::fibonacci_heap
 // U korenu hipa se cuva maksimum
 struct CompareHeapNode{
@@ -29,7 +30,8 @@ Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottlene
 
 Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest);
 
-int median_of_medians(int* a, int n, int k);
+int median_of_medians(std::vector<int> a, int n , int k);
+int median_of_medians(std::vector<EdgeId> edges, int n , int k);
 
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest);
 

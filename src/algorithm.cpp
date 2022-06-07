@@ -4,6 +4,7 @@
 #include <climits>
 #include <boost/heap/fibonacci_heap.hpp>
 #include <math.h>
+#include <algorithm>
 #include "algorithm.hpp"
 
 // Funkcija widestPathBruteForce vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
@@ -160,7 +161,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
 
 // Funkcija sort5 sortira deo niza od start do start + num, interval [start, start + num)
 // Koristi se za sortiranje malog skupa podataka
-void sort5(int* a, int start, int num){
+void sort5(std::vector<int> a, int start, int num){
     int i, j, tmp;
 
     for(i = 0; i < num; ++i){
@@ -175,7 +176,7 @@ void sort5(int* a, int start, int num){
 }
 
 // Funkcija median_of_medians vraca k-ti po velicini element niza a, niz je duzine n
-int median_of_medians(int* a, int n , int k){
+int median_of_medians(std::vector<int> a, int n , int k){
     int i = 0;
     int j = 0;
     int tmp = 0;
@@ -258,22 +259,120 @@ int median_of_medians(int* a, int n , int k){
     }
 }
 
+// Funkcija median_of_medians vraca k-ti po velicini element vektora a.
+// Posmatra se samo deo vektora od indeksa 0 do indeksa n.
+int median_of_medians(std::vector<EdgeId> edges, int n , int k){
+    int i = 0;
+    int j = 0;
+    int pivot = 0;
+    int low = 0;
+    int high = 0;
+    CompareEdgeIds compare;
+
+    if(n <= 5){
+        std::sort(edges.begin(), edges.end() + n, compare);
+        pivot = edges[n/2].weight;
+    }
+    else{
+        while(i < n && j + 4 < n){
+            std::sort(edges.begin() + j, edges.end() + j + 5, compare);
+            swap(edges[i], edges[j + 2]);
+            ++i;
+            j+=5;
+        }
+
+        while(i < n && j < n){
+            swap(edges[i], edges[j]);
+            ++i;
+            ++j;
+        }
+
+        pivot = median_of_medians(edges, i, i/2);
+    }
+    
+    for(i = 0; i < n; ++i){
+        if(edges[i].weight < pivot){
+            ++low;
+        }
+        else if(edges[i].weight > pivot){
+            ++high;
+        }
+    }
+
+    if(low <= k && k < n - high){
+        return pivot;
+    }
+    if(low < k){
+        i = 0;
+        j = n - 1;
+        while(i < j){
+            while(i < n && edges[i].weight >= pivot){
+                ++i;
+            }
+            while(j >=0 && edges[j].weight < pivot){
+                --j;
+            }
+            if(i < j){
+                swap(edges[i], edges[j]);
+            }
+        }
+        return median_of_medians(edges, n - low, k - low - 1);
+    }
+    else{
+        i = 0;
+        j = n - 1;
+        while(i < j){
+            while(i < n && edges[i].weight < pivot){
+                ++i;
+            }
+            while(j >=0 && edges[j].weight >= pivot){
+                --j;
+            }
+            if(i < j){
+                swap(edges[i], edges[j]);
+            }
+        }
+        return median_of_medians(edges, low, k);
+    }
+}
+
 // Funkcija widestPathInUndirectedGraph vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 // Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     double logNumOfEdges = 0;
     int numOfEdges = 0;
     int iterationCount = 0;
-    Path wpath;
+    int n;
+    Path wpath, path;
+    std::vector<EdgeId> edges;
+    std::vector<int> comp(g.size());
+    Graph gc(g);
 
-    for(int i =0; i < g.size(); ++i){
-        numOfEdges += g[i].size();
-    }
-    numOfEdges = numOfEdges / 2;
-    logNumOfEdges = log(numOfEdges) / log(2);
+    gc.getEdgeIds(edges);
+    n = edges.size();
+    logNumOfEdges = log(edges.size()) / log(2);
 
     for(iterationCount = 0; iterationCount < logNumOfEdges + 1; ++iterationCount){
-        //int M = median_of_medians()
+        int M = median_of_medians(edges, n, n/2);
+        path = widestPathKnowingBottleneck(gc, src, dest, M);
+        if(path.empty()){
+            //ne postoji put
+            gc.connected_components(M, comp);
+            //shrink komponente
+        }
+        else{
+            //postoji put, zapamti ga, mozda je on bas najsiri
+            wpath = path;
+            //izbrisi grane tezine manje od M iz grafa
+            gc.deleteEdges(M);
+            //modifikuj edges i n
+            for(int i = 0; i < n; ++i){
+                if(edges[i].weight < M){
+                    swap(edges[i], edges[n - 1]);
+                    n--;
+                }
+            }
+        }
     }
 
     return wpath;
