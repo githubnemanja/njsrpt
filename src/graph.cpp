@@ -72,6 +72,41 @@ void Graph::findPaths(int src, int dest, std::vector<std::pair<Path, int>>& path
     findPaths_dfs(src, dest, visited, p, paths, INT_MAX);
 }
 
+// Funkcija findPath vraca put, ako postoji, od cvora src do cvora dest.
+// Put se smesta u strukturu path.
+void Graph::findPath(int src, int dest, Path& path) const{
+    int v;
+    std::vector<int> pred(size());
+    std::vector<bool> visited(size(), false);
+    Queue q;
+
+    visited[src] = true;
+    q.push_back(src);
+
+    while(!q.empty()){
+        v = q.front();
+        q.pop_front();
+        for(auto & cur : adj[v]){
+            if(visited[cur.dest] == false){
+                visited[cur.dest] = true;
+                pred[cur.dest] = v;
+                q.push_back(cur.dest);
+            }
+        }
+    }
+
+    // Ako put ne postoji
+    if(visited[dest] != true){
+        return;
+    }
+
+    path.push_front(dest);
+    v = dest;
+    while(v != src){
+        v = pred[v];
+        path.push_front(v);
+    }
+}
 
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;

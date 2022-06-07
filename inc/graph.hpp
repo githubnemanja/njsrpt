@@ -23,6 +23,7 @@ class Graph{
     const std::vector<Edge>& operator[] (int index) const;
     void addEdge(int src, int dest, int weight);
     void printGraph() const;
+    void findPath(int src, int dest, Path& path) const;
     void findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const;
     int connected_components(std::vector<int>& com) const;
 
