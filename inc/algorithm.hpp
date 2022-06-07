@@ -31,4 +31,6 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest);
 
 int median_of_medians(int* a, int n, int k);
 
+Path widestPathInUndirectedGraph(const Graph& g, int src, int dest);
+
 #endif

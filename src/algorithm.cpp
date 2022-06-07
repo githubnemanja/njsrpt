@@ -5,6 +5,7 @@
 #include <boost/heap/fibonacci_heap.hpp>
 #include "algorithm.hpp"
 
+// Funkcija widestPathBruteForce vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 Path widestPathBruteForce(const Graph& g, int src, int dest){
     std::vector<std::pair<Path, int>> paths;
     Path p;
@@ -26,6 +27,7 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
     return maxPath;
 }
 
+// Funkcija widestPathDijkstra vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 Path widestPathDijkstra(const Graph& g, int src, int dest){
     int v = 0;
     int distance_from_src[g.size()] = {INT_MIN};
@@ -103,6 +105,7 @@ Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottlene
     return path;
 }
 
+// Funkcija widestPathMedianEdgeWeight vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     int minEdge = INT_MAX;
     int maxEdge = INT_MIN;
@@ -154,8 +157,8 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     return path;
 }
 
-// @funkcija sort5 : sortira deo niza od start do start + num, interval [start, start + num)
-//                   koristi se za sortiranje skupa podataka koji zauzima malu memoriju
+// Funkcija sort5 sortira deo niza od start do start + num, interval [start, start + num)
+// Koristi se za sortiranje malog skupa podataka
 void sort5(int* a, int start, int num){
     int i, j, tmp;
 
@@ -170,7 +173,7 @@ void sort5(int* a, int start, int num){
     }
 }
 
-// @funkcija median_of_medians : vraca k-ti po velicini element niza, niz je duzine n
+// Funkcija median_of_medians vraca k-ti po velicini element niza a, niz je duzine n
 int median_of_medians(int* a, int n , int k){
     int i = 0;
     int j = 0;
@@ -252,4 +255,10 @@ int median_of_medians(int* a, int n , int k){
         }
         return median_of_medians(a, low, k);
     }
+}
+
+// Funkcija widestPathInUndirectedGraph vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
+// Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
+Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
+    return {};
 }
