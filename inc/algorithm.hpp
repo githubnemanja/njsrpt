@@ -5,8 +5,6 @@
 #include <utility>
 #include <deque>
 
-void findPaths(const Graph& g, int src, int dest, std::deque<std::pair<Path, int>>& paths);
-
 Path widestPathBruteForce(const Graph& g, int src, int dest);
 
 Path widestPathDijkstra(const Graph& g, int src, int dest);

@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include "algorithm.hpp"
-#include <boost/heap/fibonacci_heap.hpp>
 #include <utility>
 #include <iostream>
+#include <climits>
+#include <boost/heap/fibonacci_heap.hpp>
+#include "algorithm.hpp"
 
 struct node
 {
@@ -24,40 +23,6 @@ struct compare_node
     }
 };
 
-void DFS_fp(const Graph& g, int src, int dest, bool * visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge){
-    if(visited == NULL){
-        return;
-    }
-
-    visited[src] = 1;
-
-    if(src == dest){
-        paths.push_back(std::make_pair(p, minEdge));
-    }
-    else{
-        for(auto & cur : g[src]){
-            if(visited[cur.dest] == 0){
-                p.push_back(cur.dest);
-                DFS_fp(g, cur.dest, dest, visited, p, paths, 
-                        minEdge < cur.weight ? minEdge : cur.weight);
-                p.pop_back();
-            }
-        }
-    }
-
-    visited[src] = 0;
-}
-
-void findPaths(const Graph& g, int src, int dest, std::deque<std::pair<Path, int>>& paths){
-    Path p;
-    int i = 0;
-    bool visited[g.size()] = {false};
-
-    p.push_back(src);
-
-    DFS_fp(g, src, dest, visited, p, paths, INT_MAX);
-}
-
 Path widestPathBruteForce(const Graph& g, int src, int dest){
     std::deque<std::pair<Path, int>> paths;
     Path p;
@@ -65,7 +30,7 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
     int maxEdge = INT_MIN;
     int curEdge = 0;
 
-    findPaths(g, src, dest, paths);
+    g.findPaths(src, dest, paths);
 
     while(!paths.empty()){
         auto pair = paths.back();

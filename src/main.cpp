@@ -50,7 +50,7 @@ void runTests(Graph& g, int src, int dest){
     printf("--------------------------------\n");
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
-    findPaths(g, src, dest, ps);
+    g.findPaths(src, dest, ps);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     printf("[findPaths] [ms]:%f\n",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
     //printPaths(ps);

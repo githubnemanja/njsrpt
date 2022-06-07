@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
+#include <climits>
 #include "graph.hpp"
 
 Graph::Graph(int size){
@@ -40,7 +40,40 @@ void Graph::printGraph() const{
     printf("\n--------------------------------\n");
 }
 
-void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp){
+
+void Graph::findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge) const{
+    visited[src] = true;
+
+    if(src == dest){
+        paths.push_back(std::make_pair(p, minEdge));
+    }
+    else{
+        for(auto & cur : adj[src]){
+            if(visited[cur.dest] == false){
+                p.push_back(cur.dest);
+                findPaths_dfs(cur.dest, dest, visited, p, paths, 
+                            minEdge < cur.weight ? minEdge : cur.weight);
+                p.pop_back();
+            }
+        }
+    }
+
+    visited[src] = 0;
+}
+
+// Funkcija findPaths pronalazi sve puteve u grafu izmedju cvorova src i dest. Od src do dest.
+// Putevi se smestaju u strukturu paths.
+void Graph::findPaths(int src, int dest, std::deque<std::pair<Path, int>>& paths) const{
+    Path p;
+    std::vector<bool> visited(size(), false);
+
+    p.push_back(src);
+
+    findPaths_dfs(src, dest, visited, p, paths, INT_MAX);
+}
+
+
+void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;
     comp[src] = comp_id;
 
@@ -51,13 +84,12 @@ void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int co
     }
 }
 
-// The connected_components() functions compute the connected components of
-// an undirected graph using a DFS-based approach. A connected component of
-// an undirected graph is a set of vertices that are all reachable from each other.
-// The output of the algorithm is recorded in the component property map comp,
-// which will contain numbers giving the component number assigned to each vertex.
-// The total number of components is the return value of the function.
-int Graph::connected_components(std::vector<int>& comp){
+// Funkcija connected_components() pronalazi povezane komponente u neusmerenom grafu
+// koristeci DFS pristup. Povezana komponenta je skup cvorova koji su svi dostizni
+// medju sobom. Rezultat algoritma se cuva u strukturi comp, koja predstavlja niz
+// u kome je id komponente dodeljen indeksu cvora. Funkcija connected_components
+// vraca ukupan broj komponenti kao return.
+int Graph::connected_components(std::vector<int>& comp) const{
     int comp_id = 0;
     std::vector<bool> visited(size(), false);
 

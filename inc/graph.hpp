@@ -4,6 +4,10 @@
 #include <deque>
 #include <vector>
 
+typedef  std::deque<int> Queue;
+
+typedef  std::deque<int> Path;
+
 struct Edge{
     int dest;
     int weight;
@@ -19,17 +23,15 @@ class Graph{
     const std::vector<Edge>& operator[] (int index) const;
     void addEdge(int src, int dest, int weight);
     void printGraph() const;
-    int connected_components(std::vector<int>& com);
+    void findPaths(int src, int dest, std::deque<std::pair<Path, int>>& paths) const;
+    int connected_components(std::vector<int>& com) const;
 
     std::vector<std::vector<Edge>> adj;
 
     private:
-    void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp);
+    void findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge) const;
+    void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;
 };
-
-typedef  std::deque<int> Queue;
-
-typedef  std::deque<int> Path;
 
 void DFS(const Graph& g, int src, int * visited);
 
