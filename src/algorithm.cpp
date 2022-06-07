@@ -65,15 +65,16 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
     return path;
 }
 
+// Funkcija widestPathKnowingBottleneck vraca put, ako postoji, od cvora src do cvora dest
+// u grafu g, s tim sto svaka grana tog puta mora biti najmanje bottleneck tezine
 Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck){
-    int v = 0;
-    int pred[g.size()];
-    bool visited[g.size()] = {false};
-    Queue  q;
+    int v;
+    std::vector<int> pred(g.size());
+    std::vector<bool> visited(g.size(), false);
+    Queue q;
     Path path;
 
     visited[src] = true;
-
     q.push_back(src);
 
     while(!q.empty()){
