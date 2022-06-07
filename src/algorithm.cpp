@@ -5,24 +5,6 @@
 #include <boost/heap/fibonacci_heap.hpp>
 #include "algorithm.hpp"
 
-struct node
-{
-    int key;
-    int val;
-
-    node(int key, int val)
-      : key(key), val(val)
-    { }
-};
-
-struct compare_node
-{
-    bool operator()(const node& n1, const node& n2) const
-    {
-        return n1.key < n2.key;
-    }
-};
-
 Path widestPathBruteForce(const Graph& g, int src, int dest){
     std::vector<std::pair<Path, int>> paths;
     Path p;
@@ -49,7 +31,7 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
     int distance_from_src[g.size()] = {INT_MIN};
     int pred[g.size()];
     bool visited[g.size()] = {false};
-    boost::heap::fibonacci_heap<node, boost::heap::compare<compare_node>> heap;
+    boost::heap::fibonacci_heap<HeapNode, boost::heap::compare<CompareHeapNode>> heap;
     Path path;
 
     visited[src] = true;
