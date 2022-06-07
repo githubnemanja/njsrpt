@@ -40,7 +40,7 @@ void populateGraph3(Graph& g){
 }
 
 void runTests(Graph& g, int src, int dest){
-    std::deque<std::pair<Path, int>> ps;
+    std::vector<std::pair<Path, int>> ps;
     Path path;
     struct timespec time_s, time_e;
 

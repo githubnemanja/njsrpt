@@ -24,7 +24,7 @@ struct compare_node
 };
 
 Path widestPathBruteForce(const Graph& g, int src, int dest){
-    std::deque<std::pair<Path, int>> paths;
+    std::vector<std::pair<Path, int>> paths;
     Path p;
     Path maxPath;
     int maxEdge = INT_MIN;
@@ -32,9 +32,7 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
 
     g.findPaths(src, dest, paths);
 
-    while(!paths.empty()){
-        auto pair = paths.back();
-        paths.pop_back();
+    for(auto & pair : paths){
         p = pair.first;
         curEdge = pair.second;
         if(curEdge > maxEdge){

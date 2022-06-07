@@ -41,7 +41,7 @@ void Graph::printGraph() const{
 }
 
 
-void Graph::findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge) const{
+void Graph::findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::vector<std::pair<Path, int>>& paths, int minEdge) const{
     visited[src] = true;
 
     if(src == dest){
@@ -63,7 +63,7 @@ void Graph::findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p,
 
 // Funkcija findPaths pronalazi sve puteve u grafu izmedju cvorova src i dest. Od src do dest.
 // Putevi se smestaju u strukturu paths.
-void Graph::findPaths(int src, int dest, std::deque<std::pair<Path, int>>& paths) const{
+void Graph::findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const{
     Path p;
     std::vector<bool> visited(size(), false);
 
@@ -153,7 +153,7 @@ void printPath(const Path& p){
     std::cout << std::endl;
 }
 
-void printPaths(const std::deque<std::pair<Path, int>>& paths){
+void printPaths(const std::vector<std::pair<Path, int>>& paths){
     for(auto i = paths.cbegin(); i != paths.cend(); ++i){
         std::cout << "[minEdge]:" << i->second << ", [path]:";
         printPath(i->first);

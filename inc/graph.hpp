@@ -23,13 +23,13 @@ class Graph{
     const std::vector<Edge>& operator[] (int index) const;
     void addEdge(int src, int dest, int weight);
     void printGraph() const;
-    void findPaths(int src, int dest, std::deque<std::pair<Path, int>>& paths) const;
+    void findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const;
     int connected_components(std::vector<int>& com) const;
 
     std::vector<std::vector<Edge>> adj;
 
     private:
-    void findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::deque<std::pair<Path, int>>& paths, int minEdge) const;
+    void findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::vector<std::pair<Path, int>>& paths, int minEdge) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;
 };
 
@@ -39,6 +39,6 @@ void BFS(const Graph& g, int src);
 
 void printPath(const Path& p);
 
-void printPaths(const std::deque<std::pair<Path, int>>& paths);
+void printPaths(const std::vector<std::pair<Path, int>>& paths);
 
 #endif
