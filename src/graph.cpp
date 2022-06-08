@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <climits>
+#include <iterator>
 #include "graph.hpp"
 
 Graph::Graph(int size){
@@ -54,23 +55,23 @@ void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
     }
 }
 
-void Graph::printGraph() const{
-    if(size() == 0){
-        printf("null\n");
-        return;
-    }
-
-    printf("GRAPH edges: (src, dest) = weight\n");
+std::string Graph::toString() const{
+    std::string str = "[graph] size=" + std::to_string(size()) + " edges={";
 
     for(int i = 0; i < size(); ++i){
         for(auto & edge : adj[i]){
-            printf("(%d, %d) = %d\t", i, edge.dest, edge.weight);
+            str += " (" + std::to_string(i) + "," + std::to_string(edge.dest) + "," + std::to_string(edge.weight) + ")";
         }
     }
 
-    printf("\n--------------------------------\n");
+    str += " }";
+
+    return str;
 }
 
+void Graph::printGraph() const{
+    std::cout << *this << std::endl;
+}
 
 void Graph::findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::vector<std::pair<Path, int>>& paths, int minEdge) const{
     visited[src] = true;
@@ -203,6 +204,91 @@ int Graph::connected_components(int bottleneck, std::vector<int>& comp) const{
     return comp_id;
 }
 
+// Sazima graf tako da dva cvora u i v ukoliko su deo iste povezujuce komponente,
+// tj. ako je comp[u] == comp[v], sada predstavljaju jedan cvor u novonastalom 
+// grafu, ciji je id comp[u].
+// Novonastali graf sadrzi grane jedino izmedju povezujucih komponenti.
+// Cvorovi novonastalog grafa su zapravo povezujuce komponente.
+// Postoji grana izmedju dve komponente novonastalog grafa ako postoji
+// cvor u prvoj komponenti i cvor u drugoj komponente i grana izmedju ta
+// dva cvora u inicijalnom grafu.
+// Tezina grane izmedju dve komponente tj. dva cvora u novonastalom grafu je
+// jednaka maksimumu tezina grana izmedju cvorova tih komponenti u inicijalnom grafu.
+void Graph::shrink(const std::vector<int>& comp, int comp_size){
+    // nova lista susedstava grafa nakon operacije shrink
+    std::vector<std::vector<EdgeId*>> new_adj(comp_size);
+    // pomocni vektor koji cuva pokazivac na vec dodatu granu u new_adj
+    std::vector<EdgeId*> helper(comp_size);
+
+    for(int i = 0; i < size(); ++i){
+        for(auto j = adj[i].begin(); j != adj[i].end(); ++j){
+            int u = comp[i];
+            int v = comp[j->dest];
+            // ako su cvorovi deo razlicite komponente dodati granu u new_adj
+            if(u != v){
+                // provera da li je grana vec dodata
+                if(helper[v] == nullptr || helper[v]->src != u){
+                    // ako nije dodaj granu
+                    EdgeId * edge = new EdgeId(u, v, j->weight);
+                    new_adj[u].push_back(edge);
+                    // sacuvati pokazivac na granu
+                    helper[v] = edge;
+                }
+                else{
+                    // ako jeste postaraj se da je weight maksimalan
+                    if(helper[v]->weight < j->weight){
+                        helper[v]->weight = j->weight;
+                    }
+                }
+            }
+        }
+    }
+
+    adj.clear();
+    adj.resize(comp_size);
+
+    for(int i = 0; i < new_adj.size(); ++i){
+        for(int j = 0; j < new_adj[i].size(); ++j){
+            EdgeId * edge = new_adj[i][j];
+            adj[i].push_back({edge->dest, edge->weight});
+            free(edge);
+        }
+    }
+}
+
+// Funkcija getMinEdge racuna minimalnu granu na putu path
+// Ako put postoji return je true i vrednost najmanje grane se cuva u promenljivoj min_edge
+// Ako put ne postoji return je false
+bool Graph::getMinEdge(const Path& path, int& min_edge) const{
+    int src = path.front();
+    int dest;
+    int min = INT_MAX;
+
+    if(path.size() < 2){
+        return false;
+    }
+
+    for(auto i = path.begin() + 1; i != path.end(); ++i){
+        bool edge_exists = false;
+        dest = *i;
+        for(auto edge : adj[src]){
+            if(dest == edge.dest){
+                //std::cout << "(" << src << "," << dest << "," << edge.weight << ") ";
+                edge_exists = true;
+                if(min > edge.weight){
+                    min = edge.weight;
+                }
+            }
+        }
+        if(!edge_exists){
+            return false;
+        }
+        src = dest;
+    }
+
+    min_edge = min;
+    return true;
+}
 
 void DFS(const Graph& g, int src, std::vector<bool>& visited){
     visited[src] = true;
@@ -286,4 +372,9 @@ void swap(EdgeId& e1, EdgeId& e2){
     tmp = e1.weight;
     e1.weight = e2.weight;
     e2.weight = tmp;
+}
+
+std::ostream& operator<< (std::ostream& os, const Graph& g){
+    os << g.toString();
+    return os;
 }

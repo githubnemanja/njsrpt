@@ -3,6 +3,8 @@
 
 #include <deque>
 #include <vector>
+#include <string>
+#include <iostream>
 
 typedef  std::deque<int> Queue;
 
@@ -46,11 +48,14 @@ class Graph{
     void addEdge(int src, int dest, int weight);
     void deleteEdges(int bottleneck);
     void getEdgeIds(std::vector<EdgeId>& edges) const;
+    std::string toString() const;
     void printGraph() const;
     void findPath(int src, int dest, Path& path) const;
     void findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const;
     int connected_components(std::vector<int>& com) const;
     int connected_components(int bottleneck, std::vector<int>& com) const;
+    void shrink(const std::vector<int>& comp, int comp_size);
+    bool getMinEdge(const Path& path, int& min_edge) const;
 
     std::vector<std::vector<Edge>> adj;
 
@@ -71,5 +76,7 @@ void printPaths(const std::vector<std::pair<Path, int>>& paths);
 void swap(Edge& e1, Edge& e2);
 
 void swap(EdgeId& e1, EdgeId& e2);
+
+std::ostream& operator<< (std::ostream& os, const Graph& g);
 
 #endif

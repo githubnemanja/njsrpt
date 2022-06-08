@@ -52,6 +52,21 @@ void populateGraph4(Graph& g){
     }
 }
 
+void check_result(const Graph& g, const Path& path){
+    int bottleneck;
+    bool result;
+
+    result = g.getMinEdge(path, bottleneck);
+    std::cout << "[check_result] ";
+    if(result){
+        std::cout << "bottleneck=" << bottleneck;
+    }
+    else{
+        std::cout << "[ERROR] Path does not exist!";
+    }
+    std::cout << std::endl;
+}
+
 void runTests(Graph& g, int src, int dest){
     std::vector<std::pair<Path, int>> ps;
     Path path;
@@ -63,40 +78,38 @@ void runTests(Graph& g, int src, int dest){
     printf("--------------------------------\n");
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
-    g.findPaths(src, dest, ps);
-    clock_gettime(CLOCK_MONOTONIC, &time_e);
-    printf("[findPaths] [ms]:%f\n",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
-    //printPaths(ps);
-
-    clock_gettime(CLOCK_MONOTONIC, &time_s);
-    path = widestPathBruteForce(g, src, dest);
+    //path = widestPathBruteForce(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     printf("[widestPathBruteForce] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
     printPath(path);
+    check_result(g, path);
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathDijkstra(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     printf("[widestPathDijkstra] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
     printPath(path);
+    check_result(g, path);
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathMedianEdgeWeight(g, 0, 1);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     printf("[widestPathMedianEdgeWeight] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
     printPath(path);
+    check_result(g, path);
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathInUndirectedGraph(g, 0, 1);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     printf("[widestPathInUndirectedGraph] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
     printPath(path);
+    check_result(g, path);
 
     printf("--------------------------------\n");
 }
 
 int main(){
-    Graph g(11);
+    Graph g(20);
 
     populateGraph4(g);
 

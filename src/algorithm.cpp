@@ -343,6 +343,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     int numOfEdges = 0;
     int iterationCount = 0;
     int n;
+    int bottleneck;
     Path wpath, path;
     std::vector<EdgeId> edges;
     std::vector<int> comp(g.size());
@@ -352,18 +353,34 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     n = edges.size();
     logNumOfEdges = log(edges.size()) / log(2);
 
-    for(iterationCount = 0; iterationCount < logNumOfEdges + 1; ++iterationCount){
+    for(iterationCount = 0; iterationCount < logNumOfEdges + 1 && gc.size() > 1; ++iterationCount){
+        int _src = src;
+        int _dest = dest;
         int M = median_of_medians(edges, n, n/2);
-        path = widestPathKnowingBottleneck(gc, src, dest, M);
+        //printf("M=%d, n=%d, size=%d\n", M, n, gc.size());
+        // ignorisi grane manje od M
+        path = widestPathKnowingBottleneck(gc, _src, _dest, M);
         if(path.empty()){
-            //ne postoji put
-            gc.connected_components(M, comp);
-            //shrink komponente
+            // ne postoji put
+            // pronadji povezujuce komponente
+            int comp_num = gc.connected_components(M, comp);
+            //printf("comp_num=%d\n", comp_num);
+            // ponovo koristi grane manje od M tj. sve grane
+            // sazmi graf
+            gc.shrink(comp, comp_num);
+            // id cvora postaje id povezujuce komponente u novom grafu
+            _src = comp[_src];
+            _dest = comp[_dest];
+            //gc.printGraph();
+            std::vector<EdgeId> new_edges;
+            gc.getEdgeIds(new_edges);
+            n = new_edges.size();
+            edges = new_edges;
         }
         else{
-            //postoji put, zapamti ga, mozda je on bas najsiri
-            wpath = path;
-            //izbrisi grane tezine manje od M iz grafa
+            // postoji put
+            bottleneck = M;
+            // izbrisi grane tezine manje od M iz grafa
             gc.deleteEdges(M);
             //modifikuj edges i n
             for(int i = 0; i < n; ++i){
@@ -375,5 +392,5 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         }
     }
 
-    return wpath;
+    return widestPathKnowingBottleneck(g, src, dest, bottleneck);
 }
