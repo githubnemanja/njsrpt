@@ -39,6 +39,19 @@ void populateGraph3(Graph& g){
     }
 }
 
+void populateGraph4(Graph& g){
+    srand(time(0));
+
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = i + 1; j < g.size(); ++j){
+            if(i != j){
+                g.addEdge(i, j, rand());
+                g.addEdge(j, i, rand());
+            }
+        }
+    }
+}
+
 void runTests(Graph& g, int src, int dest){
     std::vector<std::pair<Path, int>> ps;
     Path path;
@@ -79,7 +92,7 @@ void runTests(Graph& g, int src, int dest){
 int main(){
     Graph g(11);
 
-    populateGraph3(g);
+    populateGraph4(g);
 
     runTests(g, 0, 1);
 
