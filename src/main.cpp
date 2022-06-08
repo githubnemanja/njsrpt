@@ -86,6 +86,12 @@ void runTests(Graph& g, int src, int dest){
     printf("[widestPathMedianEdgeWeight] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
     printPath(path);
 
+    clock_gettime(CLOCK_MONOTONIC, &time_s);
+    path = widestPathInUndirectedGraph(g, 0, 1);
+    clock_gettime(CLOCK_MONOTONIC, &time_e);
+    printf("[widestPathInUndirectedGraph] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
+    printPath(path);
+
     printf("--------------------------------\n");
 }
 

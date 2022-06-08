@@ -270,12 +270,12 @@ int median_of_medians(std::vector<EdgeId> edges, int n , int k){
     CompareEdgeIds compare;
 
     if(n <= 5){
-        std::sort(edges.begin(), edges.end() + n, compare);
+        std::sort(edges.begin(), edges.begin() + n, compare);
         pivot = edges[n/2].weight;
     }
     else{
         while(i < n && j + 4 < n){
-            std::sort(edges.begin() + j, edges.end() + j + 5, compare);
+            std::sort(edges.begin() + j, edges.begin() + j + 5, compare);
             swap(edges[i], edges[j + 2]);
             ++i;
             j+=5;
