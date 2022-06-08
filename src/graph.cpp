@@ -140,6 +140,45 @@ void Graph::findPath(int src, int dest, Path& path) const{
     }
 }
 
+// Funkcija findPath vraca put, ako postoji, od cvora src do cvora dest,
+// s tim sto nijedna grana na putu ne sme biti manja od bottleneck.
+// Put se smesta u strukturu path.
+void Graph::findPath(int src, int dest, int bottleneck, Path& path) const{
+    int v;
+    std::vector<int> pred(size());
+    std::vector<bool> visited(size(), false);
+    Queue q;
+
+    path = {};
+
+    visited[src] = true;
+    q.push_back(src);
+
+    while(!q.empty()){
+        v = q.front();
+        q.pop_front();
+        for(auto & cur : adj[v]){
+            if(visited[cur.dest] == false && cur.weight >= bottleneck){
+                visited[cur.dest] = true; 
+                pred[cur.dest] = v;
+                q.push_back(cur.dest);
+            }
+        }
+    }
+
+    if(visited[dest] != true){
+        path = {};
+        return;
+    }
+
+    path.push_front(dest);
+    v = dest;
+    while(v != src){
+        v = pred[v];
+        path.push_front(v);
+    }
+}
+
 // Funkcija connected_components_dfs se koristi kao pomocna za connected_components
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;

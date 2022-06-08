@@ -72,37 +72,9 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
 // Funkcija widestPathKnowingBottleneck vraca put, ako postoji, od cvora src do cvora dest
 // u grafu g, s tim sto svaka grana tog puta mora biti najmanje bottleneck tezine
 Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck){
-    int v;
-    std::vector<int> pred(g.size());
-    std::vector<bool> visited(g.size(), false);
-    Queue q;
-    Path path;
+    Path path = {};
 
-    visited[src] = true;
-    q.push_back(src);
-
-    while(!q.empty()){
-        v = q.front();
-        q.pop_front();
-        for(auto & cur : g[v]){
-            if(visited[cur.dest] == false && cur.weight >= bottleneck){
-                visited[cur.dest] = true; 
-                pred[cur.dest] = v;
-                q.push_back(cur.dest);
-            }
-        }
-    }
-
-    if(visited[dest] != true){
-        return {};
-    }
-
-    path.push_front(dest);
-    v = dest;
-    while(v != src){
-        v = pred[v];
-        path.push_front(v);
-    }
+    g.findPath(src, dest, bottleneck, path);
 
     return path;
 }
@@ -146,7 +118,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     r = maxEdge;
     while(l <= r){
         m = l + (r - l)/2;
-        curPath = widestPathKnowingBottleneck(g, src, dest, m);
+        g.findPath(src, dest, m, curPath);
         if(curPath.empty()){
             r = m - 1;
         }
@@ -357,9 +329,10 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         int _src = src;
         int _dest = dest;
         int M = median_of_medians(edges, n, n/2);
+        Path path;
         //printf("M=%d, n=%d, size=%d\n", M, n, gc.size());
         // ignorisi grane manje od M
-        path = widestPathKnowingBottleneck(gc, _src, _dest, M);
+        gc.findPath(_src, _dest, M, path);
         if(path.empty()){
             // ne postoji put
             // pronadji povezujuce komponente
@@ -392,5 +365,6 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         }
     }
 
-    return widestPathKnowingBottleneck(g, src, dest, bottleneck);
+    g.findPath(src, dest, bottleneck, path);
+    return path;
 }

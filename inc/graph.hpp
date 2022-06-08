@@ -51,6 +51,7 @@ class Graph{
     std::string toString() const;
     void printGraph() const;
     void findPath(int src, int dest, Path& path) const;
+    void findPath(int src, int dest, int bottleneck, Path& path) const;
     void findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const;
     int connected_components(std::vector<int>& com) const;
     int connected_components(int bottleneck, std::vector<int>& com) const;
