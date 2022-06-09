@@ -110,7 +110,7 @@ void runTests(Graph& g, int src, int dest){
 }
 
 int main(){
-    Graph g(50);
+    Graph g(40);
 
     populateGraph4(g);
 

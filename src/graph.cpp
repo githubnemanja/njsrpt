@@ -329,6 +329,80 @@ bool Graph::getMinEdge(const Path& path, int& min_edge) const{
     return true;
 }
 
+// Funkcija isConnected proverava da li postoji put u grafu od cvora src do cvora dest.
+// Ako put postoji funkcija vraca true. Inace vraca false.
+// Kada je src == dest funkcija vraca false.
+bool Graph::isConnected(int src, int dest) const{
+    int v;
+    Queue q;
+
+    if(src == dest){
+        // Kada je src == dest funkcija vraca false.
+        return false;
+    }
+
+    std::vector<bool> visited(size(), false);
+
+    visited[src] = true;
+    q.push_back(src);
+
+    while(!q.empty()){
+        v = q.front();
+        q.pop_front();
+        for(auto & cur : adj[v]){
+            if(cur.dest == dest){
+                return true;
+            }
+
+            if(visited[cur.dest] == false){
+                visited[cur.dest] = true;
+                q.push_back(cur.dest);
+            }
+        }
+    }
+
+    return visited[dest];
+}
+
+// Funkcija isConnected proverava da li postoji put u grafu od cvora src do cvora dest,
+// pri cemu nijedna grana tog puta ne sme biti manja od bottleneck.
+// Ako put postoji funkcija vraca true. Inace vraca false.
+// Kada je src == dest funkcija vraca false.
+bool Graph::isConnected(int src, int dest, int bottleneck) const{
+    int v;
+    Queue q;
+
+    if(src == dest){
+        // Kada je src == dest funkcija vraca false.
+        return false;
+    }
+
+    std::vector<bool> visited(size(), false);
+
+    visited[src] = true;
+    q.push_back(src);
+
+    while(!q.empty()){
+        v = q.front();
+        q.pop_front();
+        for(auto & cur : adj[v]){
+            // ignorisi grane manje od bottleneck
+            if(cur.weight >= bottleneck){
+                if(cur.dest == dest){
+                    return true;
+                }
+
+                if(visited[cur.dest] == false){
+                    visited[cur.dest] = true;
+                    q.push_back(cur.dest);
+                }
+            }
+        }
+    }
+
+    return visited[dest];
+}
+
 void DFS(const Graph& g, int src, std::vector<bool>& visited){
     visited[src] = true;
     printf("%d\n", src);

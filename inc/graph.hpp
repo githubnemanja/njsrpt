@@ -57,6 +57,8 @@ class Graph{
     int connected_components(int bottleneck, std::vector<int>& com) const;
     void shrink(const std::vector<int>& comp, int comp_size);
     bool getMinEdge(const Path& path, int& min_edge) const;
+    bool isConnected(int src, int dest) const;
+    bool isConnected(int src, int dest, int bottleneck) const;
 
     std::vector<std::vector<Edge>> adj;
 
