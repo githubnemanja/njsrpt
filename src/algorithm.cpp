@@ -316,7 +316,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     int iterationCount = 0;
     int n;
     int bottleneck;
-    Path wpath, path;
+    Path path;
     std::vector<EdgeId> edges;
     std::vector<int> comp(g.size());
     Graph gc(g);
@@ -329,7 +329,6 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         int _src = src;
         int _dest = dest;
         int M = median_of_medians(edges, n, n/2);
-        Path path;
         //printf("M=%d, n=%d, size=%d\n", M, n, gc.size());
         // ignorisi grane manje od M
         gc.findPath(_src, _dest, M, path);

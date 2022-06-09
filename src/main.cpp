@@ -45,8 +45,9 @@ void populateGraph4(Graph& g){
     for(int i = 0; i < g.size(); ++i){
         for(int j = i + 1; j < g.size(); ++j){
             if(i != j){
-                g.addEdge(i, j, rand());
-                g.addEdge(j, i, rand());
+                int weight = rand();
+                g.addEdge(i, j, weight);
+                g.addEdge(j, i, weight);
             }
         }
     }
@@ -109,7 +110,7 @@ void runTests(Graph& g, int src, int dest){
 }
 
 int main(){
-    Graph g(20);
+    Graph g(50);
 
     populateGraph4(g);
 
