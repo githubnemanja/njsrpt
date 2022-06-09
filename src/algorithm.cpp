@@ -316,7 +316,6 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     int iterationCount = 0;
     int n;
     int bottleneck;
-    Path path;
     std::vector<EdgeId> edges;
     std::vector<int> comp(g.size());
     Graph gc(g);
@@ -331,8 +330,20 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         int M = median_of_medians(edges, n, n/2);
         //printf("M=%d, n=%d, size=%d\n", M, n, gc.size());
         // ignorisi grane manje od M
-        gc.findPath(_src, _dest, M, path);
-        if(path.empty()){
+        if(gc.isConnected(_src, _dest, M)){
+            // postoji put
+            bottleneck = M;
+            // izbrisi grane tezine manje od M iz grafa
+            gc.deleteEdges(M);
+            //modifikuj edges i n
+            for(int i = 0; i < n; ++i){
+                if(edges[i].weight < M){
+                    swap(edges[i], edges[n - 1]);
+                    n--;
+                }
+            }
+        }
+        else {
             // ne postoji put
             // pronadji povezujuce komponente
             int comp_num = gc.connected_components(M, comp);
@@ -349,21 +360,9 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
             n = new_edges.size();
             edges = new_edges;
         }
-        else{
-            // postoji put
-            bottleneck = M;
-            // izbrisi grane tezine manje od M iz grafa
-            gc.deleteEdges(M);
-            //modifikuj edges i n
-            for(int i = 0; i < n; ++i){
-                if(edges[i].weight < M){
-                    swap(edges[i], edges[n - 1]);
-                    n--;
-                }
-            }
-        }
     }
 
+    Path path;
     g.findPath(src, dest, bottleneck, path);
     return path;
 }
