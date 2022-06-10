@@ -450,6 +450,7 @@ void BFS(const Graph& g, int src){
 
 void printPath(const Path& p){
     bool fst = true;
+    std::cout << "[path]:";
     for(auto i = p.begin(); i != p.end(); ++i){
         if(fst){
             fst = false;

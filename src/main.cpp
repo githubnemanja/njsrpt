@@ -72,45 +72,53 @@ void check_result(const Graph& g, const Path& path){
     std::cout << std::endl;
 }
 
+// Ispisuje na standardni izlaz naziv funkcije name, kao i vreme izvrsavanje
+// time_s predstavlja vreme pocetka izvrsavanja funkcije
+// time_e predstavlja vreme zavrsetka izvrsavanja funkcije
+void printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e){
+    std::cout << "[" << name << "]" << " [ms]:" <<
+    (double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 +
+    (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0 << " ";
+}
+
 void runTests(Graph& g, int src, int dest){
     std::vector<std::pair<Path, int>> ps;
     Path path;
     struct timespec time_s, time_e;
 
-    printf("--------------------------------\n");
-    printf("[runTests] src=%d, dest=%d\n", src, dest);
-    //printGraph(g);
-    printf("--------------------------------\n");
+    std::cout << "--------------------------------" << std::endl;
+    std::cout << "[runTests] src=" << src << ", dest=" << dest << std::endl;
+    std::cout << "--------------------------------" << std::endl;
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     //path = widestPathBruteForce(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
-    printf("[widestPathBruteForce] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
+    printTimeSpecs("widestPathBruteForce", time_s, time_e);
     printPath(path);
     check_result(g, path);
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathDijkstra(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
-    printf("[widestPathDijkstra] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
+    printTimeSpecs("widestPathDijkstra", time_s, time_e);
     printPath(path);
     check_result(g, path);
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathMedianEdgeWeight(g, 0, 1);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
-    printf("[widestPathMedianEdgeWeight] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
+    printTimeSpecs("widestPathMedianEdgeWeight", time_s, time_e);
     printPath(path);
     check_result(g, path);
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathInUndirectedGraph(g, 0, 1);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
-    printf("[widestPathInUndirectedGraph] [ms]:%f [path]:",(double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 + (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0);
+    printTimeSpecs("widestPathInUndirectedGraph", time_s, time_e);
     printPath(path);
     check_result(g, path);
 
-    printf("--------------------------------\n");
+    std::cout << "--------------------------------" << std::endl;
 }
 
 int main(){
