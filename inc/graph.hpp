@@ -17,6 +17,8 @@ struct Edge{
 
     Edge() {}
     Edge(int dest, int weight): dest(dest), weight(weight) {}
+
+    std::string toString() const;
 };
 
 // Kompletan identifikator grane grafa
@@ -28,6 +30,8 @@ struct EdgeId{
     EdgeId(int src, int dest, int weight)
         : src(src), dest(dest), weight(weight)
         {}
+    
+    std::string toString() const;
 };
 
 // Koristi se za uporedjivanje objekata EdgeId
@@ -46,7 +50,7 @@ class Graph{
     std::vector<Edge>& operator[] (int index);
     const std::vector<Edge>& operator[] (int index) const;
     void addEdge(int src, int dest, int weight);
-    void deleteEdges(int bottleneck);
+    int deleteEdges(int bottleneck);
     void getEdgeIds(std::vector<EdgeId>& edges) const;
     std::string toString() const;
     void printGraph() const;
@@ -81,5 +85,9 @@ void swap(Edge& e1, Edge& e2);
 void swap(EdgeId& e1, EdgeId& e2);
 
 std::ostream& operator<< (std::ostream& os, const Graph& g);
+
+std::string toString(std::vector<EdgeId> vec);
+
+std::string toString(std::vector<int> vec);
 
 #endif

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <utility>
 #include <iostream>
+#include <fstream>
 #include <climits>
 #include <boost/heap/fibonacci_heap.hpp>
 #include <math.h>
@@ -311,55 +312,45 @@ int median_of_medians(std::vector<EdgeId> edges, int n , int k){
 // Funkcija widestPathInUndirectedGraph vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 // Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
-    double logNumOfEdges = 0;
-    int numOfEdges = 0;
-    int iterationCount = 0;
-    int n;
     int bottleneck;
+    int _src = src;
+    int _dest = dest;
     std::vector<EdgeId> edges;
     std::vector<int> comp(g.size());
     Graph gc(g);
 
     gc.getEdgeIds(edges);
-    n = edges.size();
-    logNumOfEdges = log(edges.size()) / log(2);
 
-    for(iterationCount = 0; iterationCount < logNumOfEdges + 1 && gc.size() > 1; ++iterationCount){
-        int _src = src;
-        int _dest = dest;
-        int M = median_of_medians(edges, n, n/2);
-        //printf("M=%d, n=%d, size=%d\n", M, n, gc.size());
+    while(gc.size() > 1 && !edges.empty()){
+        int M = median_of_medians(edges, edges.size(), edges.size()/2);
         // ignorisi grane manje od M
         if(gc.isConnected(_src, _dest, M)){
             // postoji put
             bottleneck = M;
             // izbrisi grane tezine manje od M iz grafa
-            gc.deleteEdges(M);
-            //modifikuj edges i n
-            for(int i = 0; i < n; ++i){
-                if(edges[i].weight < M){
-                    swap(edges[i], edges[n - 1]);
-                    n--;
-                }
+            int num_deleted = gc.deleteEdges(M + 1);
+            if(num_deleted == 0){
+                std::cout << "[widestPathInUndirectedGraph][ERROR] Did not delete any edges!" << std::endl;
             }
         }
         else {
             // ne postoji put
             // pronadji povezujuce komponente
             int comp_num = gc.connected_components(M, comp);
-            //printf("comp_num=%d\n", comp_num);
-            // ponovo koristi grane manje od M tj. sve grane
-            // sazmi graf
-            gc.shrink(comp, comp_num);
+
+            if(comp_num < 2){
+                std::cout << "[widestPathInUndirectedGraph][ERROR] comp_num=" << comp_num << std::endl;
+            }
             // id cvora postaje id povezujuce komponente u novom grafu
             _src = comp[_src];
             _dest = comp[_dest];
-            //gc.printGraph();
-            std::vector<EdgeId> new_edges;
-            gc.getEdgeIds(new_edges);
-            n = new_edges.size();
-            edges = new_edges;
+            // ponovo koristi grane manje od M tj. sve grane
+            // sazmi graf
+            gc.shrink(comp, comp_num);
         }
+        // odredi grane izmenjenog grafa
+        edges.clear();
+        gc.getEdgeIds(edges);
     }
 
     Path path;

@@ -28,21 +28,31 @@ void Graph::addEdge(int src, int dest, int weight){
     adj[src].push_back({dest, weight});
 }
 
-// Modify graph to remove all edges which weight is smaller than bottleneck
-void Graph::deleteEdges(int bottleneck){
+// Obrisati sve grane cija je tezina manja od bottleneck i vratiti broj obrisanih grana
+int Graph::deleteEdges(int bottleneck){
+    int num_deleted = 0;
+
     for(int i = 0; i < size(); ++i){
         int new_size = adj[i].size();
-        for(int j = 0; j < new_size; ++j){
+        int j = 0;
+        while(j < new_size){
             if(adj[i][j].weight < bottleneck){
-                // cur edge is for delete
-                // swap cur edge with last edge
+                // trenutna grana je za brisanje
+                // swapuj trenutnu i poslednju granu u adj[i]
                 swap(adj[i][j], adj[i][new_size - 1]);
-                // resize to delete last edge
+                // resize parametar koji ce doprineti da se kasnije obrise poslednja grana
                 new_size--;
+                // cuvaj broj obrisanih grana
+                num_deleted++;
+            }
+            else{
+                ++j;
             }
         }
         adj[i].resize(new_size);
     }
+
+    return num_deleted;
 }
 
 
@@ -199,7 +209,7 @@ void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int bo
 
     for(auto & cur : adj[src]){
         if(visited[cur.dest] == false && cur.weight >= bottleneck){
-            connected_components_dfs(cur.dest, visited, comp_id, comp);
+            connected_components_dfs(cur.dest, visited, bottleneck, comp_id, comp);
         }
     }
 }
@@ -487,7 +497,46 @@ void swap(EdgeId& e1, EdgeId& e2){
     e2.weight = tmp;
 }
 
+std::string Edge::toString() const{
+    return "(" + std:: to_string(dest) + "," + std::to_string(weight) + ")";
+}
+
+std::string EdgeId::toString() const{
+    return "(" + std:: to_string(src) + "," + std:: to_string(dest) + "," + std::to_string(weight) + ")";
+}
+
 std::ostream& operator<< (std::ostream& os, const Graph& g){
     os << g.toString();
     return os;
+}
+
+std::string toString(std::vector<EdgeId> vec){
+    std::string str = "[edges] size=" + std::to_string(vec.size()) + " edges={";
+
+    for(auto e : vec){
+        str += " " + e.toString();
+    }
+
+    str += " }";
+
+    return str;
+}
+
+std::string toString(std::vector<int> vec){
+    bool fst = true;
+    std::string str = "[";
+
+    for(auto e : vec){
+        if(fst){
+            fst = false;
+        }
+        else{
+            str += ",";
+        }
+        str +=  std::to_string(e);
+    }
+
+    str += "]";
+
+    return str;
 }

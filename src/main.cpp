@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "time.h"
+#include <fstream>
 
 #include "graph.hpp"
 #include "algorithm.hpp"
+
+// flag za debagovanje
+#define DEBUG 0
 
 void populateGraph1(Graph& g){
     if(g.size() < 5){
@@ -110,11 +114,19 @@ void runTests(Graph& g, int src, int dest){
 }
 
 int main(){
-    Graph g(40);
+    Graph g(30);
+
+    #if DEBUG == 1
+    std::ofstream out("out.txt");
+    std::streambuf *coutbuf = std::cout.rdbuf();
+    std::cout.rdbuf(out.rdbuf());
+    #endif
 
     populateGraph4(g);
-
     runTests(g, 0, 1);
 
+    #if DEBUG == 1
+    std::cout.rdbuf(coutbuf);
+    #endif
     return 0;
 }
