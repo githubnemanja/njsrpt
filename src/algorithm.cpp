@@ -16,6 +16,10 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
     int maxEdge = INT_MIN;
     int curEdge = 0;
 
+    if(src == dest){
+        return {};
+    }
+
     g.findPaths(src, dest, paths);
 
     for(auto & pair : paths){
@@ -38,6 +42,10 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
     bool visited[g.size()] = {false};
     boost::heap::fibonacci_heap<HeapNode, boost::heap::compare<CompareHeapNode>> heap;
     Path path;
+
+    if(src == dest){
+        return {};
+    }
 
     visited[src] = true;
     distance_from_src[src] = INT_MAX;
@@ -75,6 +83,10 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
 Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck){
     Path path = {};
 
+    if(src == dest){
+        return {};
+    }
+
     g.findPath(src, dest, bottleneck, path);
 
     return path;
@@ -91,6 +103,10 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     bool visited[g.size()] = {false};
     Path path, curPath;
     Queue q;
+
+    if(src == dest){
+        return {};
+    }
 
     //find minEdge, maxEdge
 
@@ -318,6 +334,10 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     std::vector<EdgeId> edges;
     std::vector<int> comp(g.size());
     Graph gc(g);
+
+    if(src == dest){
+        return {};
+    }
 
     gc.getEdgeIds(edges);
 
