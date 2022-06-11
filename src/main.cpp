@@ -75,7 +75,7 @@ void check_result(const Graph& g, const Path& path){
 // Ispisuje na standardni izlaz naziv funkcije name, kao i vreme izvrsavanja
 // time_s predstavlja vreme pocetka izvrsavanja funkcije
 // time_e predstavlja vreme zavrsetka izvrsavanja funkcije
-int printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e){
+double printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e){
     double duration = (double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 +
                       (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0;
 
@@ -93,7 +93,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     std::vector<std::pair<Path, int>> ps;
     Path path;
     struct timespec time_s, time_e;
-    int duration;
+    double duration;
     int bottleneck;
     int prevbottleneck;
     bool result = true;
