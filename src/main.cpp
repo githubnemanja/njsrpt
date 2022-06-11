@@ -57,19 +57,30 @@ void populateGraph4(Graph& g){
     }
 }
 
-void check_result(const Graph& g, const Path& path){
-    int bottleneck;
-    bool result;
+bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test){
+    if(path.empty()){
+        if(g.isConnected(src, dest)){
+            std::cout << "[ERROR] Alg. returned null path, but path between vertices exists! " << std::endl;
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 
-    result = g.getMinEdge(path, bottleneck);
-    std::cout << "[check_result] ";
-    if(result){
-        std::cout << "bottleneck=" << bottleneck;
+    int prevbottleneck = bottleneck;
+    if(g.getMinEdge(path, bottleneck) == false){
+        std::cout << "[ERROR] Path that alg. returned does not exist in graph! " << std::endl;
+        return false;
     }
-    else{
-        std::cout << "[ERROR] Path does not exist!";
+
+    if(!first_test && prevbottleneck != bottleneck){
+        std::cout << "[ERROR] Different path output! " << 
+        "previous alg. returned path with bottleneck " << prevbottleneck << 
+        ", this alg. returned path with bottleneck " << bottleneck << std::endl;
+        return false;
     }
-    std::cout << std::endl;
+    return true;
 }
 
 // Ispisuje na standardni izlaz naziv funkcije name, kao i vreme izvrsavanja
@@ -109,10 +120,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         duration = printTimeSpecs("widestPathBruteForce", time_s, time_e);
         times.push_back(duration);
         printPath(path);
-        check_result(g, path);
-        if(g.getMinEdge(path, bottleneck) == false){
-            result = false;
-        }
+        result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
     }
     else{
         std::cout << "[widestPathBruteForce] [not executed] " << std::endl;
@@ -125,45 +133,23 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     duration = printTimeSpecs("widestPathDijkstra", time_s, time_e);
     times.push_back(duration);
     printPath(path);
-    check_result(g, path);
-    prevbottleneck = bottleneck;
-    if(g.getMinEdge(path, bottleneck) == false){
-        result = false;
-    }
-    if(incbf && prevbottleneck != bottleneck){
-        result = false;
-    }
+    result = check_result(g, src, dest, path, bottleneck, incbf ? false : true) ? result : false;
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
-    path = widestPathMedianEdgeWeight(g, 0, 1);
+    path = widestPathMedianEdgeWeight(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathMedianEdgeWeight", time_s, time_e);
     times.push_back(duration);
     printPath(path);
-    check_result(g, path);
-    prevbottleneck = bottleneck;
-    if(g.getMinEdge(path, bottleneck) == false){
-        result = false;
-    }
-    if(prevbottleneck != bottleneck){
-        result = false;
-    }
+    result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
-    path = widestPathInUndirectedGraph(g, 0, 1);
+    path = widestPathInUndirectedGraph(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathInUndirectedGraph", time_s, time_e);
     times.push_back(duration);
     printPath(path);
-    check_result(g, path);
-    prevbottleneck = bottleneck;
-    if(g.getMinEdge(path, bottleneck) == false){
-        result = false;
-    }
-    if(prevbottleneck != bottleneck){
-        result = false;
-    }
-
+    result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
 
     if(result){
         std::cout << "[success]" << std::endl;
