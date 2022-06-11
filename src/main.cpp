@@ -100,7 +100,8 @@ double printTimeSpecs(std::string name, struct timespec time_s, struct timespec 
 // algoritam widestPathBruteForce se iskljucuje iz nekih testova.
 // Alg. widestPathBruteForce je ukljucen u testove akko je flag incbf true.
 // Vremena izvrsavanja algoritama se vracaju kroz times
-bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf){
+// Flag directed je true akko je graf usmeren, a false akko je neusmeren.
+bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed){
     std::vector<std::pair<Path, int>> ps;
     Path path;
     struct timespec time_s, time_e;
@@ -143,13 +144,19 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     printPath(path);
     result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
 
-    clock_gettime(CLOCK_MONOTONIC, &time_s);
-    path = widestPathInUndirectedGraph(g, src, dest);
-    clock_gettime(CLOCK_MONOTONIC, &time_e);
-    duration = printTimeSpecs("widestPathInUndirectedGraph", time_s, time_e);
-    times.push_back(duration);
-    printPath(path);
-    result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
+    if(directed == false){
+        clock_gettime(CLOCK_MONOTONIC, &time_s);
+        path = widestPathInUndirectedGraph(g, src, dest);
+        clock_gettime(CLOCK_MONOTONIC, &time_e);
+        duration = printTimeSpecs("widestPathInUndirectedGraph", time_s, time_e);
+        times.push_back(duration);
+        printPath(path);
+        result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
+    }
+    else{
+        std::cout << "[widestPathInUndirectedGraph] [not executed] " << std::endl;
+        times.push_back(0);
+    }
 
     if(result){
         std::cout << "[success]" << std::endl;
@@ -210,7 +217,7 @@ int main(){
         Graph g(INPUT_SIZE);
         populateGraph4(g);
         std::vector<double> times;
-        success += runTests(g, 0, 1, times, false) ? 1 : 0;
+        success += runTests(g, 0, 1, times, false, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
     }
 
