@@ -83,7 +83,13 @@ int printTimeSpecs(std::string name, struct timespec time_s, struct timespec tim
     return duration;
 }
 
-bool runTests(Graph& g, int src, int dest, std::vector<double>& times){
+// Funkcija runTests izvrsava testove tj. widestPath(g, src, dest)
+// za sve razlocite implementacije algoritma widestPath.
+// Zbog velike prostorne slozenosti, stazmerne sa V!
+// algoritam widestPathBruteForce se iskljucuje iz nekih testova.
+// Alg. widestPathBruteForce je ukljucen u testove akko je flag incbf true.
+// Vremena izvrsavanja algoritama se vracaju kroz times
+bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf){
     std::vector<std::pair<Path, int>> ps;
     Path path;
     struct timespec time_s, time_e;
@@ -96,16 +102,22 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times){
     std::cout << "[runTests] src=" << src << ", dest=" << dest << std::endl;
     std::cout << "--------------------------------" << std::endl;
 
-    clock_gettime(CLOCK_MONOTONIC, &time_s);
-    //path = widestPathBruteForce(g, src, dest);
-    clock_gettime(CLOCK_MONOTONIC, &time_e);
-    duration = printTimeSpecs("widestPathBruteForce", time_s, time_e);
-    times.push_back(duration);
-    //printPath(path);
-    //check_result(g, path);
-    //if(g.getMinEdge(path, bottleneck) == false){
-    //    result = false;
-    //}
+    if(incbf){
+        clock_gettime(CLOCK_MONOTONIC, &time_s);
+        path = widestPathBruteForce(g, src, dest);
+        clock_gettime(CLOCK_MONOTONIC, &time_e);
+        duration = printTimeSpecs("widestPathBruteForce", time_s, time_e);
+        times.push_back(duration);
+        printPath(path);
+        check_result(g, path);
+        if(g.getMinEdge(path, bottleneck) == false){
+            result = false;
+        }
+    }
+    else{
+        std::cout << "[widestPathBruteForce] [not executed] " << std::endl;
+        times.push_back(0);
+    }
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathDijkstra(g, src, dest);
@@ -118,9 +130,9 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times){
     if(g.getMinEdge(path, bottleneck) == false){
         result = false;
     }
-    //if(prevbottleneck != bottleneck){
-    //    result = false;
-    //}
+    if(incbf && prevbottleneck != bottleneck){
+        result = false;
+    }
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
     path = widestPathMedianEdgeWeight(g, 0, 1);
@@ -212,7 +224,7 @@ int main(){
         Graph g(INPUT_SIZE);
         populateGraph4(g);
         std::vector<double> times;
-        success += runTests(g, 0, 1, times) ? 1 : 0;
+        success += runTests(g, 0, 1, times, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
     }
 
