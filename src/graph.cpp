@@ -322,7 +322,6 @@ bool Graph::getMinEdge(const Path& path, int& min_edge) const{
         dest = *i;
         for(auto edge : adj[src]){
             if(dest == edge.dest){
-                //std::cout << "(" << src << "," << dest << "," << edge.weight << ") ";
                 edge_exists = true;
                 if(min > edge.weight){
                     min = edge.weight;

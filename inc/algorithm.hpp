@@ -13,7 +13,7 @@ struct HeapNode{
     { }
 };
 
-// Koristi se za uporedjivanje objekata EdgeId
+// Koristi se za uporedjivanje objekata HeapNode
 // Koristi se za deklaraciju boost::heap::fibonacci_heap
 // U korenu hipa se cuva maksimum
 struct CompareHeapNode{
