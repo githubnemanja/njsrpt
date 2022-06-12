@@ -387,13 +387,14 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
 int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::vector<int>& T){
     // Buket, niz skupova u koje se dodaju/oduzimaju(push/pop) cvorovi grafa
     std::list<int> B[M];
+    // Flag NO_INDEX oznacava da cvor nije u Buketu
+    const int NO_INDEX = -1;
     // b[v] predstavlja indeks cvora v u Buketu
-    std::vector<int> b(g.size(), 0);
+    std::vector<int> b(g.size(), NO_INDEX);
     // f[v] je flag koji oznacava da li je cvor v izbacen(pop) iz Buketa
     std::vector<bool> f(g.size(), false);
     // addr cuva adresu elementa liste u Buketu kao bi element liste mogao da se obrse u O(1)
     std::list<int>::iterator addr[g.size()];
-
 
     // Oznaci src
     f[src] = true;
@@ -425,7 +426,9 @@ int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::v
                     if(f[w] == false){
                         int k = std::min(b[v], i->order);
                         if(k > b[w]){
-                            B[b[w]].erase(addr[w]);
+                            if(b[w] != NO_INDEX){
+                                B[b[w]].erase(addr[w]);
+                            }
                             B[k].push_front(w);
                             addr[w] = B[k].begin();
                             b[w] = k;
