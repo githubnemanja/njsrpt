@@ -109,8 +109,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
         return {};
     }
 
-    //find minEdge, maxEdge
-
+    //pronadji najmanju i najvecu granu u grafu
     visited[src] = 1;
 
     q.push_back(src);
@@ -132,10 +131,11 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
         }
     }
 
+    // Binarna pretraga po tezini grane
     l = minEdge;
     r = maxEdge;
     while(l <= r){
-        m = l + (r - l)/2;
+        m = l + r/2 - l/2;
         g.findPath(src, dest, m, curPath);
         if(curPath.empty()){
             r = m - 1;
