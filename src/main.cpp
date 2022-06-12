@@ -6,8 +6,10 @@
 #include "graph.hpp"
 #include "algorithm.hpp"
 
-// flag za debagovanje
-#define DEBUG 0
+// Flag za debagovanje
+// Ako je DEBUG flag 0 stampa se na standardni izlaz
+// Ako je DEBUG flag 1 stampa se u fajl out.txt
+const int DEBUG = 0;
 
 // Lokalne funkcije
 void populateGraph1(Graph& g);
