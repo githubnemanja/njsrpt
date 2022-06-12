@@ -35,4 +35,6 @@ int median_of_medians(std::vector<EdgeId> edges, int n , int k);
 
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest);
 
+Path widestPathEdgesOrdering(Graph g, int src, int dest);
+
 #endif

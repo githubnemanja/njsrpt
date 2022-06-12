@@ -6,6 +6,7 @@
 #include <boost/heap/fibonacci_heap.hpp>
 #include <math.h>
 #include <algorithm>
+#include <list>
 #include "algorithm.hpp"
 
 // Funkcija widestPathBruteForce vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
@@ -376,4 +377,137 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     Path path;
     g.findPath(src, dest, bottleneck, path);
     return path;
+}
+
+// Funkcija bottlemeckSortedEdgeWeights vraca bottleneck tj. najmanju granu najsireg puta
+// od cvora src do cvora dest u grafu g. Podrazumeva se da put postoji.
+// Ovaj algoritam zahteva da postoji uredjenje grana grafa po tezini tj. da su predhodno sortirane
+// Argument M predstavlja broj razlicitih vrednosti Edge.order
+// Tabela T mapira redosled grane u tezinu grane, T[order] = weight
+int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::vector<int>& T){
+    // Buket, niz skupova u koje se dodaju/oduzimaju(push/pop) cvorovi grafa
+    std::list<int> B[M];
+    // b[v] predstavlja indeks cvora v u Buketu
+    int b[g.size()] = {0};
+    // f[v] je flag koji oznacava da li je cvor v izbacen(pop) iz Buketa
+    bool f[g.size()] = {false};
+    // addr cuva adresu elementa liste u Buketu kao bi element liste mogao da se obrse u O(1)
+    std::list<int>::iterator addr[g.size()];
+
+
+    // Oznaci src
+    f[src] = true;
+
+    // Iteriraj kroz susede od src
+    for(auto i = g[src].begin(); i != g[src].end(); ++i){
+        // grana (src, i->dest)
+        B[i->order].push_front(i->dest);
+        addr[i->dest] = B[i->order].begin();
+        b[i->dest] = i->order;
+    }
+
+    int U = M - 1;
+    while(U >= 0){
+        while(!B[U].empty()){
+            // pop bilo koji v iz skupa B[U]
+            int v = B[U].front();
+            B[U].pop_front();
+            f[v] = true;
+            if(v == dest){
+                // kraj algoritma
+                return T[b[dest]];
+            }
+            else{
+                // Iteriraj kroz susede od v
+                for(auto i = g[v].begin(); i != g[v].end(); ++i){
+                    // grana (v, w)
+                    int w = i->dest;
+                    if(f[w] == false){
+                        int k = std::min(b[v], i->order);
+                        if(k > b[w]){
+                            B[b[w]].erase(addr[w]);
+                            B[k].push_front(w);
+                            addr[w] = B[k].begin();
+                            b[w] = k;
+                        }
+                    }
+                }
+            }
+        }
+        U--;
+    }
+    // ovo ne bi trebalo nikad da vrati
+    std::cout << "[ERROR] Wrong return!" << std::endl;
+    return INT_MIN;
+}
+
+// Funkcija widestPathInUndirectedGraph vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
+Path widestPathEdgesOrdering(Graph g, int src, int dest){
+    int minEdge = INT_MAX;
+    int maxEdge = INT_MIN;
+    std::vector<EdgeId> edges;
+
+    // Odrediti grane grafa
+    // Odrediti mininalnu i maksimalnu granu grafa
+    for(int i = 0; i < g.size(); ++i){
+        for(auto & edge : g[i]){
+            edges.push_back({i, edge.dest, edge.weight, &edge});
+            if(minEdge > edge.weight){
+                minEdge = edge.weight;
+            }
+            if(maxEdge < edge.weight){
+                maxEdge = edge.weight;
+            }
+        }
+    }
+
+    std::vector<EdgeId> E = edges;
+    int iterationCount = 0;
+    int L = minEdge;
+    int U = maxEdge;
+    int sm = log2(edges.size());
+    while(iterationCount < sm){
+        int M = median_of_medians(edges, edges.size(), edges.size()/2);
+        if(g.isConnected(src, dest, M + 1)){
+            std::vector<EdgeId> new_edges;
+            for(auto eid : edges){
+                if(eid.weight > M){
+                    new_edges.push_back(eid);
+                }
+            }
+            edges = new_edges;
+            L = M;
+        }
+        else{
+            U = M;
+        }
+        iterationCount++;
+    }
+
+    std::vector<int> T(edges.size()+2);
+    T[0] = INT_MIN;
+    T[edges.size() + 1] = INT_MAX;
+
+    std::sort(edges.begin(), edges.end(), [](EdgeId e1, EdgeId e2){
+        return e1.weight < e2.weight;
+    });
+
+    for(int i = 0; i < g.size(); ++i){
+        for(auto & edge : g[i]){
+            if(edge.weight <= L){
+                edge.order = 0;
+            }
+            if(edge.weight > U){
+                edge.order = edges.size() + 1;
+            }
+        }
+    }
+    for(int i = 0; i < edges.size(); ++i){
+        edges[i].addr->order = i + 1;
+        T[i + 1] = edges[i].weight;
+    }
+
+    int bottleneck = bottleneckSortedEdges(g, src, dest, edges.size() + 2, T);
+
+    return widestPathKnowingBottleneck(g, src, dest, bottleneck);
 }

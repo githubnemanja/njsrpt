@@ -11,24 +11,37 @@ typedef  std::deque<int> Queue;
 typedef  std::deque<int> Path;
 
 // Koristi se u listi susedstava cvora grafa
+// Uredjeni par (src, dest, weigh) oznacava granu od cvora src do cvora dest, tezine weight
+// Cvor src se dobija kao indeks vektora susedstava adj
+// Polje order se koristi u slucaju kada su grane sortirane po tezini da oznaci redni broj grane
 struct Edge{
     int dest;
     int weight;
+    int order;
 
     Edge() {}
-    Edge(int dest, int weight): dest(dest), weight(weight) {}
+    Edge(int dest, int weight): dest(dest), weight(weight), order(0) {}
 
     std::string toString() const;
 };
 
 // Kompletan identifikator grane grafa
+// Uredjeni par (src, dest, weigh) oznacava granu od cvora src do cvora dest, tezine weight
+// Polje adrr se koristi kao pokazivac na granu grafa kada je to potrebno
+// Polje addr se koristi jedino u algoritmu widestPathEdgesOrdering
 struct EdgeId{
     int src;
     int dest;
     int weight;
+    Edge* addr;
 
     EdgeId(int src, int dest, int weight)
-        : src(src), dest(dest), weight(weight)
+        : src(src), dest(dest), weight(weight), addr(nullptr)
+        {}
+
+    // Koristi se jedino u algoritmu widestPathEdgesOrdering
+    EdgeId(int src, int dest, int weight, Edge* addr)
+        : src(src), dest(dest), weight(weight), addr(addr)
         {}
     
     std::string toString() const;

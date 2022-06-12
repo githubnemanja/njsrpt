@@ -57,6 +57,18 @@ void populateGraph4(Graph& g){
     }
 }
 
+void populateGraph5(Graph& g){
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = i + 1; j < g.size(); ++j){
+            if(i != j){
+                int weight = g.size()*i+j;
+                g.addEdge(i, j, weight);
+                g.addEdge(j, i, weight);
+            }
+        }
+    }
+}
+
 bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test){
     if(path.empty()){
         if(g.isConnected(src, dest)){
@@ -158,6 +170,17 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         times.push_back(0);
     }
 
+    // Iskopirati graf zbog problema sa const
+    // Algoritam modifikuje Edge.order pa graf nije const
+    Graph gc(g);
+    clock_gettime(CLOCK_MONOTONIC, &time_s);
+    path = widestPathEdgesOrdering(gc, src, dest);
+    clock_gettime(CLOCK_MONOTONIC, &time_e);
+    duration = printTimeSpecs("widestPathEdgesOrdering", time_s, time_e);
+    times.push_back(duration);
+    printPath(path);
+    result = check_result(g, src, dest, path, bottleneck, false) ? result : false;
+
     if(result){
         std::cout << "[success]" << std::endl;
     }
@@ -196,7 +219,7 @@ void printResult(int success, int total){
 
 int main(){
     const int NUM_OF_TESTS = 100;
-    const int NUM_OF_ALGOS = 4;
+    const int NUM_OF_ALGOS = 5;
     int INPUT_SIZE  = 30;
 
     std::vector<std::pair<std::string, double>> avgs{
@@ -204,6 +227,7 @@ int main(){
         {"widestPathDijkstra", 0},
         {"widestPathMedianEdgeWeight", 0},
         {"widestPathInUndirectedGraph", 0},
+        {"widestPathEdgesOrdering", 0},
     };
 
     #if DEBUG == 1

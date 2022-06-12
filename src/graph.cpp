@@ -70,7 +70,7 @@ std::string Graph::toString() const{
 
     for(int i = 0; i < size(); ++i){
         for(auto & edge : adj[i]){
-            str += " (" + std::to_string(i) + "," + std::to_string(edge.dest) + "," + std::to_string(edge.weight) + ")";
+            str += " (" + std::to_string(i) + "," + std::to_string(edge.dest) + "," + std::to_string(edge.weight) + "," + std::to_string(edge.order) + ")";
         }
     }
 
@@ -495,6 +495,10 @@ void swap(EdgeId& e1, EdgeId& e2){
     tmp = e1.weight;
     e1.weight = e2.weight;
     e2.weight = tmp;
+
+    Edge* t = e1.addr;
+    e1.addr = e2.addr;
+    e2.addr = t;
 }
 
 std::string Edge::toString() const{
