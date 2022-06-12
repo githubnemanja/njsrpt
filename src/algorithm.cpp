@@ -447,6 +447,10 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
     int maxEdge = INT_MIN;
     std::vector<EdgeId> edges;
 
+    if(src == dest){
+        return {};
+    }
+
     // Odrediti grane grafa
     // Odrediti mininalnu i maksimalnu granu grafa
     for(int i = 0; i < g.size(); ++i){
