@@ -427,7 +427,7 @@ void DFS(const Graph& g, int src, std::vector<bool>& visited){
 void BFS(const Graph& g, int src){
     int v = 0;
     Queue q;
-    bool visited[g.size()] = {false};
+    std::vector<bool> visited(g.size(), false);
 
     visited[src] = true;
 

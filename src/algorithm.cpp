@@ -38,9 +38,9 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
 // Funkcija widestPathDijkstra vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
 Path widestPathDijkstra(const Graph& g, int src, int dest){
     int v = 0;
-    int distance_from_src[g.size()] = {INT_MIN};
-    int pred[g.size()];
-    bool visited[g.size()] = {false};
+    std::vector<int> distance_from_src(g.size(), INT_MIN);
+    std::vector<int> pred(g.size());
+    std::vector<bool> visited(g.size(), false);
     boost::heap::fibonacci_heap<HeapNode, boost::heap::compare<CompareHeapNode>> heap;
     Path path;
 
@@ -101,7 +101,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     int r = 0;
     int m = 0;
     int v = 0;
-    bool visited[g.size()] = {false};
+    std::vector<bool> visited(g.size(), false);
     Path path, curPath;
     Queue q;
 
@@ -388,9 +388,9 @@ int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::v
     // Buket, niz skupova u koje se dodaju/oduzimaju(push/pop) cvorovi grafa
     std::list<int> B[M];
     // b[v] predstavlja indeks cvora v u Buketu
-    int b[g.size()] = {0};
+    std::vector<int> b(g.size(), 0);
     // f[v] je flag koji oznacava da li je cvor v izbacen(pop) iz Buketa
-    bool f[g.size()] = {false};
+    std::vector<bool> f(g.size(), false);
     // addr cuva adresu elementa liste u Buketu kao bi element liste mogao da se obrse u O(1)
     std::list<int>::iterator addr[g.size()];
 
