@@ -9,6 +9,57 @@
 // flag za debagovanje
 #define DEBUG 0
 
+// Lokalne funkcije
+void populateGraph1(Graph& g);
+void populateGraph2(Graph& g);
+void populateGraph3(Graph& g);
+void populateGraph4(Graph& g);
+void populateGraph5(Graph& g);
+bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test);
+double printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e);
+bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed);
+void updateAvgs(std::vector<std::pair<std::string, double>>& avgs, std::vector<double> times, int divident);
+void printAvgs(std::vector<std::pair<std::string, double>> avgs);
+void printResult(int success, int total);
+
+int main(){
+    const int NUM_OF_TESTS = 100;
+    const int NUM_OF_ALGOS = 5;
+    int INPUT_SIZE  = 30;
+
+    std::vector<std::pair<std::string, double>> avgs{
+        {"widestPathBruteForce", 0},
+        {"widestPathDijkstra", 0},
+        {"widestPathMedianEdgeWeight", 0},
+        {"widestPathInUndirectedGraph", 0},
+        {"widestPathEdgesOrdering", 0},
+    };
+
+    #if DEBUG == 1
+    std::ofstream out("out.txt");
+    std::streambuf *coutbuf = std::cout.rdbuf();
+    std::cout.rdbuf(out.rdbuf());
+    #endif
+
+    int success = 0;
+    for(int i = 0; i < NUM_OF_TESTS; ++i){
+        Graph g(INPUT_SIZE);
+        populateGraph4(g);
+        std::vector<double> times;
+        success += runTests(g, 0, 1, times, false, false) ? 1 : 0;
+        updateAvgs(avgs, times, NUM_OF_TESTS);
+    }
+
+    printAvgs(avgs);
+
+    printResult(success, NUM_OF_TESTS);
+
+    #if DEBUG == 1
+    std::cout.rdbuf(coutbuf);
+    #endif
+    return 0;
+}
+
 void populateGraph1(Graph& g){
     if(g.size() < 5){
         return;
@@ -69,6 +120,7 @@ void populateGraph5(Graph& g){
     }
 }
 
+// Funkcija check_result proverava da li je rezultat algoritma ispravan
 bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test){
     if(path.empty()){
         if(g.isConnected(src, dest)){
@@ -191,12 +243,14 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     return result;
 }
 
+// Funkcija updateAvgs se koristi za racunanje prosecnog vremena izvravanja testova
 void updateAvgs(std::vector<std::pair<std::string, double>>& avgs, std::vector<double> times, int divident){
     for(int i = 0; i < avgs.size(); ++i){
         avgs[i].second += times[i] / divident;
     }
 }
 
+// Funkcija printAvgs stampa na standardni izlaz prosecno vreme izvravanja testiranig algoritama
 void printAvgs(std::vector<std::pair<std::string, double>> avgs){
     std::cout << "--------------------------------" << std::endl;
     std::cout << "[AVERAGE EXECUTION TIME]" << std::endl;
@@ -206,6 +260,9 @@ void printAvgs(std::vector<std::pair<std::string, double>> avgs){
     }
 }
 
+// Funkcija printResult stampa na standardni izlaz rezultat testova,
+// pri cemu je succcess broj testova koji su se zavrsili uspesno,
+// dok je total ukupa broj testova
 void printResult(int success, int total){
     std::cout << "--------------------------------" << std::endl;
     if(success == total){
@@ -215,42 +272,4 @@ void printResult(int success, int total){
         std::cout << "Tests results: " << "[" << success << "/" << total << "] tests passed." << std::endl;
     }
     std::cout << "--------------------------------" << std::endl;
-}
-
-int main(){
-    const int NUM_OF_TESTS = 100;
-    const int NUM_OF_ALGOS = 5;
-    int INPUT_SIZE  = 30;
-
-    std::vector<std::pair<std::string, double>> avgs{
-        {"widestPathBruteForce", 0},
-        {"widestPathDijkstra", 0},
-        {"widestPathMedianEdgeWeight", 0},
-        {"widestPathInUndirectedGraph", 0},
-        {"widestPathEdgesOrdering", 0},
-    };
-
-    #if DEBUG == 1
-    std::ofstream out("out.txt");
-    std::streambuf *coutbuf = std::cout.rdbuf();
-    std::cout.rdbuf(out.rdbuf());
-    #endif
-
-    int success = 0;
-    for(int i = 0; i < NUM_OF_TESTS; ++i){
-        Graph g(INPUT_SIZE);
-        populateGraph4(g);
-        std::vector<double> times;
-        success += runTests(g, 0, 1, times, false, false) ? 1 : 0;
-        updateAvgs(avgs, times, NUM_OF_TESTS);
-    }
-
-    printAvgs(avgs);
-
-    printResult(success, NUM_OF_TESTS);
-
-    #if DEBUG == 1
-    std::cout.rdbuf(coutbuf);
-    #endif
-    return 0;
 }
