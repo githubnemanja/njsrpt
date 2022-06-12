@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "time.h"
 #include <fstream>
+#include <random>
+#include <climits>
 
 #include "graph.hpp"
 #include "algorithm.hpp"
@@ -9,14 +11,15 @@
 // Flag za debagovanje
 // Ako je DEBUG flag 0 stampa se na standardni izlaz
 // Ako je DEBUG flag 1 stampa se u fajl out.txt
-const int DEBUG = 0;
+#define DEBUG 0
 
 // Lokalne funkcije
-void populateGraph1(Graph& g);
-void populateGraph2(Graph& g);
-void populateGraph3(Graph& g);
-void populateGraph4(Graph& g);
-void populateGraph5(Graph& g);
+void generateRandomV2DirectedEdges(Graph& g);
+void generateRandomV2UndirectedEdges(Graph& g);
+void generateRandomOVDirectedEdges(Graph& g);
+void generateRandomOVUndirectedEdges(Graph& g);
+void generateConstantO1Edges(Graph& g);
+void generateConstantOVEdges(Graph& g);
 bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test);
 double printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e);
 bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed);
@@ -46,7 +49,7 @@ int main(){
     int success = 0;
     for(int i = 0; i < NUM_OF_TESTS; ++i){
         Graph g(INPUT_SIZE);
-        populateGraph4(g);
+        generateRandomV2UndirectedEdges(g);
         std::vector<double> times;
         success += runTests(g, 0, 1, times, false, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
@@ -62,7 +65,71 @@ int main(){
     return 0;
 }
 
-void populateGraph1(Graph& g){
+// Dodaje u usmeren graf V^2 grana sa random tezinama
+void generateRandomV2DirectedEdges(Graph& g){
+    std::default_random_engine generator(std::random_device{}());;
+    std::uniform_int_distribution<int> distribution(INT_MIN + 1, INT_MAX - 1);
+
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = 0; j < g.size(); ++j){
+            if(i != j){
+                int weight = distribution(generator);
+                g.addEdge(i, j, weight);
+            }
+        }
+    }
+}
+
+// Dodaje u neusmeren graf V^2 grana sa random tezinama
+void generateRandomV2UndirectedEdges(Graph& g){
+    std::default_random_engine generator(std::random_device{}());;
+    std::uniform_int_distribution<int> distribution(INT_MIN + 1, INT_MAX - 1);
+
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = i + 1; j < g.size(); ++j){
+            int weight = distribution(generator);
+            g.addEdge(i, j, weight);
+            g.addEdge(j, i, weight);
+        }
+    }
+}
+
+// Dodaje u usmeren graf random O(V) grana sa random tezinama
+void generateRandomOVDirectedEdges(Graph& g){
+    std::default_random_engine generator(std::random_device{}());(std::random_device{}());
+    std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
+    std::uniform_int_distribution<int> edges_distribution(0, g.size());
+    int goal = std::rand() % g.size();
+
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = 0; j < g.size(); ++j){
+            if(i != j && edges_distribution(generator) == goal){
+                int weight = weights_distribution(generator);
+                g.addEdge(i, j, weight);
+            }
+        }
+    }
+}
+
+// Dodaje u neusmeren graf random O(V) grana sa random tezinama
+void generateRandomOVUndirectedEdges(Graph& g){
+    std::default_random_engine generator(std::random_device{}());;
+    std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
+    std::uniform_int_distribution<int> edges_distribution(0, g.size());
+    int goal = std::rand() % g.size();
+
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = i + 1; j < g.size(); ++j){
+            if(edges_distribution(generator) == goal){
+                int weight = weights_distribution(generator);
+                g.addEdge(i, j, weight);
+                g.addEdge(j, i, weight);
+            }
+        }
+    }
+}
+
+void generateConstantO1Edges(Graph& g){
     if(g.size() < 5){
         return;
     }
@@ -75,50 +142,12 @@ void populateGraph1(Graph& g){
     g.addEdge(3, 1, 200);
 }
 
-void populateGraph2(Graph& g){
+void generateConstantOVEdges(Graph& g){
     for(int i = 2; i < g.size(); ++i){
         g.addEdge(i, i - 1, 10);
     }
     for(int i = 2; i < g.size(); ++i){
         g.addEdge(0, i, i);
-    }
-}
-
-void populateGraph3(Graph& g){
-    srand(time(0));
-
-    for(int i = 0; i < g.size(); ++i){
-        for(int j = 0; j < g.size(); ++j){
-            if(i != j){
-                g.addEdge(i, j, rand());
-            }
-        }
-    }
-}
-
-void populateGraph4(Graph& g){
-    srand(time(0));
-
-    for(int i = 0; i < g.size(); ++i){
-        for(int j = i + 1; j < g.size(); ++j){
-            if(i != j){
-                int weight = rand();
-                g.addEdge(i, j, weight);
-                g.addEdge(j, i, weight);
-            }
-        }
-    }
-}
-
-void populateGraph5(Graph& g){
-    for(int i = 0; i < g.size(); ++i){
-        for(int j = i + 1; j < g.size(); ++j){
-            if(i != j){
-                int weight = g.size()*i+j;
-                g.addEdge(i, j, weight);
-                g.addEdge(j, i, weight);
-            }
-        }
     }
 }
 
