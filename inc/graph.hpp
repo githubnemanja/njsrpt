@@ -28,7 +28,7 @@ struct Edge{
 // Kompletan identifikator grane grafa
 // Uredjeni par (src, dest, weigh) oznacava granu od cvora src do cvora dest, tezine weight
 // Polje adrr se koristi kao pokazivac na granu grafa kada je to potrebno
-// Polje addr se koristi jedino u algoritmu widestPathEdgesOrdering
+// Polje addr se koristi u algoritmu widestPathEdgesOrdering
 struct EdgeId{
     int src;
     int dest;
@@ -39,7 +39,7 @@ struct EdgeId{
         : src(src), dest(dest), weight(weight), addr(nullptr)
         {}
 
-    // Koristi se jedino u algoritmu widestPathEdgesOrdering
+    // Koristi se u algoritmu widestPathEdgesOrdering
     EdgeId(int src, int dest, int weight, Edge* addr)
         : src(src), dest(dest), weight(weight), addr(addr)
         {}
@@ -82,6 +82,8 @@ class Graph{
     void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const;
 
+    // Lista susedstava grafa
+    // Susedni cvorovi i grane cvora v, nalaze se u adj[v]
     std::vector<std::vector<Edge>> adj;
 };
 
