@@ -24,11 +24,12 @@ const std::vector<Edge>& Graph::operator[] (int index) const{
     return adj[index];
 }
 
+// Dodaj granu (src, dest) tezine weight u graf
 void Graph::addEdge(int src, int dest, int weight){
     adj[src].push_back({dest, weight});
 }
 
-// Obrisati sve grane cija je tezina manja od bottleneck i vratiti broj obrisanih grana
+// Obrisati sve grane u grafu cija je tezina manja od bottleneck i vratiti broj obrisanih grana
 int Graph::deleteEdges(int bottleneck){
     int num_deleted = 0;
 
@@ -38,7 +39,7 @@ int Graph::deleteEdges(int bottleneck){
         while(j < new_size){
             if(adj[i][j].weight < bottleneck){
                 // trenutna grana je za brisanje
-                // swapuj trenutnu i poslednju granu u adj[i]
+                // swap-uj trenutnu i poslednju granu u adj[i]
                 swap(adj[i][j], adj[i][new_size - 1]);
                 // resize parametar koji ce doprineti da se kasnije obrise poslednja grana
                 new_size--;
@@ -158,7 +159,7 @@ void Graph::findPath(int src, int dest, int bottleneck, Path& path) const{
     }
 }
 
-// Funkcija connected_components_dfs se koristi kao pomocna za connected_components
+// Funkcija connected_components_dfs se koristi kao pomocna za connected_components i predstavlja obilazak grafa u dubinu
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;
     comp[src] = comp_id;
@@ -170,7 +171,7 @@ void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int co
     }
 }
 
-// Funkcija connected_components_dfs se koristi kao pomocna za connected_components
+// Funkcija connected_components_dfs se koristi kao pomocna za connected_components i predstavlja obilazak grafa u dubinu
 // Algoritam ignorise grane manje od bottleneck
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;
@@ -183,7 +184,7 @@ void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int bo
     }
 }
 
-// Funkcija connected_components() pronalazi povezane komponente u neusmerenom grafu
+// Funkcija connected_components pronalazi povezane komponente u neusmerenom grafu
 // koristeci DFS pristup. Povezana komponenta je skup cvorova koji su svi dostizni
 // medju sobom. Rezultat algoritma se cuva u strukturi comp, koja predstavlja niz
 // u kome je id komponente dodeljen indeksu cvora. Funkcija connected_components
@@ -202,7 +203,7 @@ int Graph::connected_components(std::vector<int>& comp) const{
     return comp_id;
 }
 
-// Funkcija connected_components() pronalazi povezane komponente u neusmerenom grafu
+// Funkcija connected_components pronalazi povezane komponente u neusmerenom grafu
 // koristeci DFS pristup. Povezana komponenta je skup cvorova koji su svi dostizni
 // medju sobom. Rezultat algoritma se cuva u strukturi comp, koja predstavlja niz
 // u kome je id komponente dodeljen indeksu cvora. Funkcija connected_components
@@ -222,14 +223,12 @@ int Graph::connected_components(int bottleneck, std::vector<int>& comp) const{
     return comp_id;
 }
 
-// Sazima graf tako da dva cvora u i v ukoliko su deo iste povezujuce komponente,
-// tj. ako je comp[u] == comp[v], sada predstavljaju jedan cvor u novonastalom 
-// grafu, ciji je id comp[u].
+// Funkcija shrink sazima graf tako da dva cvora u i v ukoliko su deo iste povezujuce komponente,
+// tj. ako je comp[u] == comp[v], sada predstavljaju jedan cvor u novonastalom grafu, ciji je id comp[u].
 // Novonastali graf sadrzi grane jedino izmedju povezujucih komponenti.
 // Cvorovi novonastalog grafa su zapravo povezujuce komponente.
 // Postoji grana izmedju dve komponente novonastalog grafa ako postoji
-// cvor u prvoj komponenti i cvor u drugoj komponente i grana izmedju ta
-// dva cvora u inicijalnom grafu.
+// cvor u prvoj komponenti i cvor u drugoj komponente i grana izmedju ta dva cvora u inicijalnom grafu.
 // Tezina grane izmedju dve komponente tj. dva cvora u novonastalom grafu je
 // jednaka maksimumu tezina grana izmedju cvorova tih komponenti u inicijalnom grafu.
 void Graph::shrink(const std::vector<int>& comp, int comp_size){
@@ -382,6 +381,38 @@ bool Graph::isConnected(int src, int dest, int bottleneck) const{
     return visited[dest];
 }
 
+void swap(Edge& e1, Edge& e2){
+    int tmp;
+
+    tmp = e1.dest;
+    e1.dest = e2.dest;
+    e2.dest = tmp;
+
+    tmp = e1.weight;
+    e1.weight = e2.weight;
+    e2.weight = tmp;
+}
+
+void swap(EdgeId& e1, EdgeId& e2){
+    int tmp;
+
+    tmp = e1.src;
+    e1.src = e2.src;
+    e2.src = tmp;
+
+    tmp = e1.dest;
+    e1.dest = e2.dest;
+    e2.dest = tmp;
+
+    tmp = e1.weight;
+    e1.weight = e2.weight;
+    e2.weight = tmp;
+
+    Edge* t = e1.addr;
+    e1.addr = e2.addr;
+    e2.addr = t;
+}
+
 void DFS(const Graph& g, int src, std::vector<bool>& visited){
     visited[src] = true;
     printf("%d\n", src);
@@ -437,38 +468,6 @@ void printPaths(const std::vector<std::pair<Path, int>>& paths){
         std::cout << "[minEdge]:" << i->second << ", [path]:";
         printPath(i->first);
     }
-}
-
-void swap(Edge& e1, Edge& e2){
-    int tmp;
-
-    tmp = e1.dest;
-    e1.dest = e2.dest;
-    e2.dest = tmp;
-
-    tmp = e1.weight;
-    e1.weight = e2.weight;
-    e2.weight = tmp;
-}
-
-void swap(EdgeId& e1, EdgeId& e2){
-    int tmp;
-
-    tmp = e1.src;
-    e1.src = e2.src;
-    e2.src = tmp;
-
-    tmp = e1.dest;
-    e1.dest = e2.dest;
-    e2.dest = tmp;
-
-    tmp = e1.weight;
-    e1.weight = e2.weight;
-    e2.weight = tmp;
-
-    Edge* t = e1.addr;
-    e1.addr = e2.addr;
-    e2.addr = t;
 }
 
 std::string Edge::toString() const{

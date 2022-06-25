@@ -81,26 +81,19 @@ class Graph{
     void connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const;
 
     // Lista susedstava grafa
-    // Susedni cvorovi i grane cvora v, nalaze se u adj[v]
+    // Susedni cvorovi cvora v, nalaze se u adj[v]
     std::vector<std::vector<Edge>> adj;
 };
 
-void DFS(const Graph& g, int src, int * visited);
-
-void BFS(const Graph& g, int src);
-
-void printPath(const Path& p);
-
-void printPaths(const std::vector<std::pair<Path, int>>& paths);
-
 void swap(Edge& e1, Edge& e2);
-
 void swap(EdgeId& e1, EdgeId& e2);
 
+void DFS(const Graph& g, int src, int * visited);
+void BFS(const Graph& g, int src);
+void printPath(const Path& p);
+void printPaths(const std::vector<std::pair<Path, int>>& paths);
 std::ostream& operator<< (std::ostream& os, const Graph& g);
-
 std::string toString(std::vector<EdgeId> vec);
-
 std::string toString(std::vector<int> vec);
 
 #endif

@@ -3,6 +3,10 @@
 
 #include "graph.hpp"
 
+// -----------------------------------------------------------------------------------------------------------------------
+// Definicije lokalnih tipova
+// -----------------------------------------------------------------------------------------------------------------------
+
 // Koristi se za deklaraciju boost::heap::fibonacci_heap
 struct HeapNode{
     int key;
@@ -22,19 +26,14 @@ struct CompareHeapNode{
     }
 };
 
+// -----------------------------------------------------------------------------------------------------------------------
+// Deklaracije funkcija za pronalazenje najsireg puta
+// -----------------------------------------------------------------------------------------------------------------------
+
 Path widestPathBruteForce(const Graph& g, int src, int dest);
-
 Path widestPathDijkstra(const Graph& g, int src, int dest);
-
-Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck);
-
 Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest);
-
-int median_of_medians(std::vector<int> a, int n , int k);
-int median_of_medians(std::vector<EdgeId> edges, int n , int k);
-
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest);
-
 Path widestPathEdgesOrdering(Graph g, int src, int dest);
 
 #endif

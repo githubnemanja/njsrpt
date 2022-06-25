@@ -4,28 +4,34 @@
 #include <fstream>
 #include <random>
 #include <climits>
-
 #include "graph.hpp"
 #include "algorithm.hpp"
 
-// Flag za debagovanje
-// Ako je DEBUG flag 0 stampa se na standardni izlaz
-// Ako je DEBUG flag 1 stampa se u fajl out.txt
+// Ako je DEBUG flag jednak 0 stampa se na standardni izlaz, ako je jednak 1 stampa se u fajl out.txt
 #define DEBUG 0
 
-// Lokalne funkcije
+// -----------------------------------------------------------------------------------------------------------------------
+// Deklaracije lokalnih funkcija
+// -----------------------------------------------------------------------------------------------------------------------
+
 void generateRandomV2DirectedEdges(Graph& g);
 void generateRandomV2UndirectedEdges(Graph& g);
 void generateRandomOVDirectedEdges(Graph& g);
 void generateRandomOVUndirectedEdges(Graph& g);
 void generateConstantO1Edges(Graph& g);
 void generateConstantOVEdges(Graph& g);
+
+bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed);
+
 bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test);
 double printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e);
-bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed);
 void updateAvgs(std::vector<std::pair<std::string, double>>& avgs, std::vector<double> times, int divident);
 void printAvgs(std::vector<std::pair<std::string, double>> avgs);
 void printResult(int success, int total);
+
+// -----------------------------------------------------------------------------------------------------------------------
+// main program
+// -----------------------------------------------------------------------------------------------------------------------
 
 int main(){
     const int NUM_OF_TESTS = 100;
@@ -64,6 +70,10 @@ int main(){
     #endif
     return 0;
 }
+
+// -----------------------------------------------------------------------------------------------------------------------
+// Definicije lokalnih funkcija
+// -----------------------------------------------------------------------------------------------------------------------
 
 // Dodaje u usmeren graf V^2 grana sa random tezinama
 void generateRandomV2DirectedEdges(Graph& g){
