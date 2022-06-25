@@ -69,7 +69,6 @@ class Graph{
     void printGraph() const;
     void findPath(int src, int dest, Path& path) const;
     void findPath(int src, int dest, int bottleneck, Path& path) const;
-    void findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const;
     int connected_components(std::vector<int>& com) const;
     int connected_components(int bottleneck, std::vector<int>& com) const;
     void shrink(const std::vector<int>& comp, int comp_size);
@@ -78,7 +77,6 @@ class Graph{
     bool isConnected(int src, int dest, int bottleneck) const;
 
     private:
-    void findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::vector<std::pair<Path, int>>& paths, int minEdge) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const;
 

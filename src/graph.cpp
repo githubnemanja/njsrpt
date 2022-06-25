@@ -83,37 +83,6 @@ void Graph::printGraph() const{
     std::cout << *this << std::endl;
 }
 
-void Graph::findPaths_dfs(int src, int dest, std::vector<bool>& visited, Path p, std::vector<std::pair<Path, int>>& paths, int minEdge) const{
-    visited[src] = true;
-
-    if(src == dest){
-        paths.push_back(std::make_pair(p, minEdge));
-    }
-    else{
-        for(auto & cur : adj[src]){
-            if(visited[cur.dest] == false){
-                p.push_back(cur.dest);
-                findPaths_dfs(cur.dest, dest, visited, p, paths, 
-                            minEdge < cur.weight ? minEdge : cur.weight);
-                p.pop_back();
-            }
-        }
-    }
-
-    visited[src] = 0;
-}
-
-// Funkcija findPaths pronalazi sve puteve u grafu izmedju cvorova src i dest. Od src do dest.
-// Putevi se smestaju u strukturu paths.
-void Graph::findPaths(int src, int dest, std::vector<std::pair<Path, int>>& paths) const{
-    Path p;
-    std::vector<bool> visited(size(), false);
-
-    p.push_back(src);
-
-    findPaths_dfs(src, dest, visited, p, paths, INT_MAX);
-}
-
 // Funkcija findPath vraca put, ako postoji, od cvora src do cvora dest.
 // Put se smesta u strukturu path.
 void Graph::findPath(int src, int dest, Path& path) const{
@@ -293,6 +262,7 @@ void Graph::shrink(const std::vector<int>& comp, int comp_size){
         }
     }
 
+    // kopiraj new_adj u adj, formiraj novu listu suseda grafa G
     adj.clear();
     adj.resize(comp_size);
 

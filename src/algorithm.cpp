@@ -9,30 +9,44 @@
 #include <list>
 #include "algorithm.hpp"
 
-// Funkcija widestPathBruteForce vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
-Path widestPathBruteForce(const Graph& g, int src, int dest){
-    std::vector<std::pair<Path, int>> paths;
-    Path p;
-    Path maxPath;
-    int maxEdge = INT_MIN;
-    int curEdge = 0;
+void maxminBruteForceHelper(const Graph& g, int src, int dest, std::vector<bool>& visited, int minEdge, int& maxmin){
+    visited[src] = true;
 
     if(src == dest){
-        return {};
+        if(maxmin < minEdge){
+            maxmin = minEdge;
+        }
     }
-
-    g.findPaths(src, dest, paths);
-
-    for(auto & pair : paths){
-        p = pair.first;
-        curEdge = pair.second;
-        if(curEdge > maxEdge){
-            maxEdge = curEdge;
-            maxPath = p;
+    else{
+        for(auto & cur : g[src]){
+            if(visited[cur.dest] == false){
+                maxminBruteForceHelper(g, cur.dest, dest, visited, 
+                                        minEdge < cur.weight ? minEdge : cur.weight,
+                                        maxmin);
+            }
         }
     }
 
-    return maxPath;
+    visited[src] = false;
+}
+
+int maxminBruteForce(const Graph& g, int src, int dest){
+    std::vector<bool> visited(g.size(), false);
+    int maxmin = INT_MIN;
+
+    maxminBruteForceHelper(g, src, dest, visited, INT_MAX, maxmin);
+
+    return maxmin;
+}
+
+// Funkcija widestPathBruteForce vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
+Path widestPathBruteForce(const Graph& g, int src, int dest){
+    Path path;
+
+    int maxmin = maxminBruteForce(g, src, dest);
+    g.findPath(src, dest, maxmin, path);
+
+    return path;
 }
 
 // Funkcija widestPathDijkstra vraca najsiri put, ako postoji, od cvora src do cvora dest u grafu g
