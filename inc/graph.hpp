@@ -96,10 +96,7 @@ class Graph{
 void swap(Edge& e1, Edge& e2);
 void swap(EdgeId& e1, EdgeId& e2);
 
-void DFS(const Graph& g, int src, int * visited);
-void BFS(const Graph& g, int src);
 void printPath(const Path& p);
-void printPaths(const std::vector<std::pair<Path, int>>& paths);
 std::ostream& operator<< (std::ostream& os, const Graph& g);
 std::string toString(std::vector<EdgeId> vec);
 std::string toString(std::vector<int> vec);

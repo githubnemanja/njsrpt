@@ -389,42 +389,6 @@ void swap(EdgeId& e1, EdgeId& e2){
     e2.addr = t;
 }
 
-void DFS(const Graph& g, int src, std::vector<bool>& visited){
-    visited[src] = true;
-    printf("%d\n", src);
-
-    // obrada neoznacenih suseda cvora src
-    for(auto & cur : g[src]){
-        if(visited[cur.dest] == false){
-            DFS(g, cur.dest, visited);
-            printf("(%d, %d)\n", src, cur.dest);
-        }
-    }
-}
-
-void BFS(const Graph& g, int src){
-    int v = 0;
-    Queue q;
-    std::vector<bool> visited(g.size(), false);
-
-    visited[src] = true;
-
-    q.push_back(src);
-
-    while(q.empty()){
-        v = q.front();
-        q.pop_front();
-        printf("%d\n", v);
-        for(auto & cur : g[v]){
-            if(visited[cur.dest] == false){
-                visited[cur.dest] = true;
-                printf("(%d,%d)\n", v, cur.dest);
-                q.push_back(cur.dest);
-            }
-        }
-    }
-}
-
 void printPath(const Path& p){
     bool fst = true;
     std::cout << "[path]:";
@@ -438,13 +402,6 @@ void printPath(const Path& p){
         std::cout << *i;
     }
     std::cout << std::endl;
-}
-
-void printPaths(const std::vector<std::pair<Path, int>>& paths){
-    for(auto i = paths.cbegin(); i != paths.cend(); ++i){
-        std::cout << "[minEdge]:" << i->second << ", [path]:";
-        printPath(i->first);
-    }
 }
 
 std::string Edge::toString() const{
