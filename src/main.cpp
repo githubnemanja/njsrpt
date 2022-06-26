@@ -164,7 +164,7 @@ void generateConstantOVEdges(Graph& g){
 // Funkcija check_result proverava da li je rezultat algoritma ispravan
 bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test){
     if(path.empty()){
-        if(g.isConnected(src, dest)){
+        if(g.connected(src, dest)){
             std::cout << "[ERROR] Alg. returned null path, but path between vertices exists! " << std::endl;
             return false;
         }

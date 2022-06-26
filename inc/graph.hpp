@@ -59,24 +59,32 @@ class Graph{
     public:
     Graph(int size);
     Graph(const Graph& g);
+
     int size() const;
     std::vector<Edge>& operator[] (int index);
     const std::vector<Edge>& operator[] (int index) const;
+
     void addEdge(int src, int dest, int weight);
-    int deleteEdges(int bottleneck);
     void getEdgeIds(std::vector<EdgeId>& edges) const;
-    std::string toString() const;
-    void printGraph() const;
+    bool getMinEdge(const Path& path, int& min_edge) const;
+    int deleteEdges(int bottleneck);
+
+    bool connected(int src, int dest) const;
+    bool connected(int src, int dest, int bottleneck) const;
     void findPath(int src, int dest, Path& path) const;
     void findPath(int src, int dest, int bottleneck, Path& path) const;
     int connected_components(std::vector<int>& com) const;
     int connected_components(int bottleneck, std::vector<int>& com) const;
     void shrink(const std::vector<int>& comp, int comp_size);
-    bool getMinEdge(const Path& path, int& min_edge) const;
-    bool isConnected(int src, int dest) const;
-    bool isConnected(int src, int dest, int bottleneck) const;
+
+    std::string toString() const;
+    void printGraph() const;
 
     private:
+    void connectedDFS(int src, std::vector<bool>& visited) const;
+    void connectedDFS(int src, std::vector<bool>& visited, int bottleneck) const;
+    void findPathDFS(int src, std::vector<bool>& visited, std::vector<int>& pred) const;
+    void findPathDFS(int src, std::vector<bool>& visited, int bottleneck, std::vector<int>& pred) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const;
 

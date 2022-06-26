@@ -152,7 +152,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     while(gc.size() > 1 && !edges.empty()){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
         // ignorisi grane manje od M
-        if(gc.isConnected(_src, _dest, M)){
+        if(gc.connected(_src, _dest, M)){
             // postoji put
             bottleneck = M;
             // izbrisi grane tezine manje od M iz grafa
@@ -217,7 +217,7 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
     int sm = log2(edges.size());
     while(iterationCount < sm){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
-        if(g.isConnected(src, dest, M + 1)){
+        if(g.connected(src, dest, M + 1)){
             std::vector<EdgeId> new_edges;
             for(auto eid : edges){
                 if(eid.weight > M){

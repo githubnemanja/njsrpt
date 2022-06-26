@@ -56,7 +56,6 @@ int Graph::deleteEdges(int bottleneck){
     return num_deleted;
 }
 
-
 // Funkcija getEdgeIds vraca sve grane grafa. Cuva ih u strukturi edges.
 void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
     for(int i = 0; i < adj.size(); ++i){
@@ -84,86 +83,133 @@ void Graph::printGraph() const{
     std::cout << *this << std::endl;
 }
 
-// Funkcija findPath vraca put, ako postoji, od cvora src do cvora dest.
+// Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
+void Graph::connectedDFS(int src, std::vector<bool>& visited) const{
+    visited[src] = true;
+
+    // obrada neoznacenih suseda cvora src
+    for(auto & cur : adj[src]){
+        if(visited[cur.dest] == false){
+            connectedDFS(cur.dest, visited);
+        }
+    }
+}
+
+// Funkcija connected proverava da li postoji put u grafu od cvora src do cvora dest.
+// Ako put postoji funkcija vraca true. Inace vraca false.
+// Kada je src == dest funkcija vraca false.
+bool Graph::connected(int src, int dest) const{
+    if(src == dest){
+        return false;
+    }
+    std::vector<bool> visited(size(), false);
+    connectedDFS(src, visited);
+    return visited[dest];
+}
+
+// Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
+// Algoritam ignorise grane manje od bottleneck
+void Graph::connectedDFS(int src, std::vector<bool>& visited, int bottleneck) const{
+    visited[src] = true;
+
+    // obrada neoznacenih suseda cvora src
+    // ignorisi grane manje od bottleneck
+    for(auto & cur : adj[src]){
+        if(visited[cur.dest] == false && cur.weight >= bottleneck){
+            connectedDFS(cur.dest, visited, bottleneck);
+        }
+    }
+}
+
+// Funkcija connected proverava da li postoji put u grafu od cvora src do cvora dest.
+// Ako put postoji funkcija vraca true. Inace vraca false.
+// Kada je src == dest funkcija vraca false.
+// Prilikom trayenja puta algoritam ignorise grane manje od bottleneck.
+bool Graph::connected(int src, int dest, int bottleneck) const{
+    if(src == dest){
+        return false;
+    }
+    std::vector<bool> visited(size(), false);
+    connectedDFS(src, visited, bottleneck);
+    return visited[dest];
+}
+
+// Funkcija findPathDFS se koristi kao pomocna za findPath i predstavlja obilazak grafa u dubinu
+void Graph::findPathDFS(int src, std::vector<bool>& visited, std::vector<int>& pred) const{
+    visited[src] = true;
+
+    // obrada neoznacenih suseda cvora src
+    for(auto & cur : adj[src]){
+        if(visited[cur.dest] == false){
+            pred[cur.dest] = src;
+            findPathDFS(cur.dest, visited, pred);
+        }
+    }
+}
+
+// Funkcija findPath vraca put u grafu od cvora src do cvora dest.
 // Put se smesta u strukturu path.
 void Graph::findPath(int src, int dest, Path& path) const{
-    int v;
-    std::vector<int> pred(size());
-    std::vector<bool> visited(size(), false);
-    Queue q;
-
-    visited[src] = true;
-    q.push_back(src);
-
-    while(!q.empty()){
-        v = q.front();
-        q.pop_front();
-        for(auto & cur : adj[v]){
-            if(visited[cur.dest] == false){
-                visited[cur.dest] = true;
-                pred[cur.dest] = v;
-                q.push_back(cur.dest);
-            }
-        }
-    }
-
-    // Ako put ne postoji
-    if(visited[dest] != true){
-        return;
-    }
-
-    path.push_front(dest);
-    v = dest;
-    while(v != src){
-        v = pred[v];
-        path.push_front(v);
-    }
-}
-
-// Funkcija findPath vraca put, ako postoji, od cvora src do cvora dest,
-// s tim sto nijedna grana na putu ne sme biti manja od bottleneck.
-// Put se smesta u strukturu path.
-void Graph::findPath(int src, int dest, int bottleneck, Path& path) const{
-    int v;
-    std::vector<int> pred(size());
-    std::vector<bool> visited(size(), false);
-    Queue q;
-
     path = {};
-
-    visited[src] = true;
-    q.push_back(src);
-
-    while(!q.empty()){
-        v = q.front();
-        q.pop_front();
-        for(auto & cur : adj[v]){
-            if(visited[cur.dest] == false && cur.weight >= bottleneck){
-                visited[cur.dest] = true; 
-                pred[cur.dest] = v;
-                q.push_back(cur.dest);
-            }
-        }
-    }
-
-    if(visited[dest] != true){
-        path = {};
+    if(src == dest){
         return;
     }
-
-    path.push_front(dest);
-    v = dest;
-    while(v != src){
-        v = pred[v];
-        path.push_front(v);
+    std::vector<bool> visited(size(), false);
+    std::vector<int> pred(size());
+    findPathDFS(src, visited, pred);
+    if(visited[dest]){
+        int t = dest;
+        while(t != src){
+            path.push_front(t);
+            t = pred[t];
+        }
+        path.push_front(src);
     }
 }
+
+// Funkcija findPathDFS se koristi kao pomocna za findPath i predstavlja obilazak grafa u dubinu
+// Algoritam ignorise grane manje od bottleneck
+void Graph::findPathDFS(int src, std::vector<bool>& visited, int bottleneck, std::vector<int>& pred) const{
+    visited[src] = true;
+
+    // obrada neoznacenih suseda cvora src
+    // ignorisi grane manje od bottleneck
+    for(auto & cur : adj[src]){
+        if(visited[cur.dest] == false && cur.weight >= bottleneck){
+            pred[cur.dest] = src;
+            findPathDFS(cur.dest, visited, bottleneck, pred);
+        }
+    }
+}
+
+// Funkcija findPath vraca put u grafu od cvora src do cvora dest.
+// Put se smesta u strukturu path.
+// Prilikom trazenja puta algoritam ignorise grane manje od bottleneck.
+void Graph::findPath(int src, int dest, int bottleneck, Path& path) const{
+    path = {};
+    if(src == dest){
+        return;
+    }
+    std::vector<bool> visited(size(), false);
+    std::vector<int> pred(size());
+    findPathDFS(src, visited, bottleneck, pred);
+    if(visited[dest]){
+        int t = dest;
+        while(t != src){
+            path.push_front(t);
+            t = pred[t];
+        }
+        path.push_front(src);
+    }
+}
+
 
 // Funkcija connected_components_dfs se koristi kao pomocna za connected_components i predstavlja obilazak grafa u dubinu
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;
     comp[src] = comp_id;
 
+    // obrada neoznacenih suseda cvora src
     for(auto & cur : adj[src]){
         if(visited[cur.dest] == false){
             connected_components_dfs(cur.dest, visited, comp_id, comp);
@@ -177,6 +223,8 @@ void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int bo
     visited[src] = true;
     comp[src] = comp_id;
 
+    // obrada neoznacenih suseda cvora src
+    // ignorisi grane manje od bottleneck
     for(auto & cur : adj[src]){
         if(visited[cur.dest] == false && cur.weight >= bottleneck){
             connected_components_dfs(cur.dest, visited, bottleneck, comp_id, comp);
@@ -289,6 +337,7 @@ bool Graph::getMinEdge(const Path& path, int& min_edge) const{
     for(auto i = path.begin() + 1; i != path.end(); ++i){
         bool edge_exists = false;
         dest = *i;
+        // obrada susednih grana cvora src
         for(auto edge : adj[src]){
             if(dest == edge.dest){
                 edge_exists = true;
@@ -307,79 +356,6 @@ bool Graph::getMinEdge(const Path& path, int& min_edge) const{
     return true;
 }
 
-// Funkcija isConnected proverava da li postoji put u grafu od cvora src do cvora dest.
-// Ako put postoji funkcija vraca true. Inace vraca false.
-// Kada je src == dest funkcija vraca false.
-bool Graph::isConnected(int src, int dest) const{
-    int v;
-    Queue q;
-
-    if(src == dest){
-        // Kada je src == dest funkcija vraca false.
-        return false;
-    }
-
-    std::vector<bool> visited(size(), false);
-
-    visited[src] = true;
-    q.push_back(src);
-
-    while(!q.empty()){
-        v = q.front();
-        q.pop_front();
-        for(auto & cur : adj[v]){
-            if(cur.dest == dest){
-                return true;
-            }
-
-            if(visited[cur.dest] == false){
-                visited[cur.dest] = true;
-                q.push_back(cur.dest);
-            }
-        }
-    }
-
-    return visited[dest];
-}
-
-// Funkcija isConnected proverava da li postoji put u grafu od cvora src do cvora dest,
-// pri cemu nijedna grana tog puta ne sme biti manja od bottleneck.
-// Ako put postoji funkcija vraca true. Inace vraca false.
-// Kada je src == dest funkcija vraca false.
-bool Graph::isConnected(int src, int dest, int bottleneck) const{
-    int v;
-    Queue q;
-
-    if(src == dest){
-        // Kada je src == dest funkcija vraca false.
-        return false;
-    }
-
-    std::vector<bool> visited(size(), false);
-
-    visited[src] = true;
-    q.push_back(src);
-
-    while(!q.empty()){
-        v = q.front();
-        q.pop_front();
-        for(auto & cur : adj[v]){
-            // ignorisi grane manje od bottleneck
-            if(cur.weight >= bottleneck){
-                if(cur.dest == dest){
-                    return true;
-                }
-
-                if(visited[cur.dest] == false){
-                    visited[cur.dest] = true;
-                    q.push_back(cur.dest);
-                }
-            }
-        }
-    }
-
-    return visited[dest];
-}
 
 void swap(Edge& e1, Edge& e2){
     int tmp;
@@ -417,6 +393,7 @@ void DFS(const Graph& g, int src, std::vector<bool>& visited){
     visited[src] = true;
     printf("%d\n", src);
 
+    // obrada neoznacenih suseda cvora src
     for(auto & cur : g[src]){
         if(visited[cur.dest] == false){
             DFS(g, cur.dest, visited);
