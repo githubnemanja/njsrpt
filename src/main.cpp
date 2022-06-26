@@ -21,7 +21,7 @@ void generateRandomOVUndirectedEdges(Graph& g);
 void generateConstantO1Edges(Graph& g);
 void generateConstantOVEdges(Graph& g);
 
-bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed);
+bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf);
 
 bool check_result(const Graph& g, int src, int dest, const Path& path, int& bottleneck, bool first_test);
 double printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e);
@@ -57,7 +57,7 @@ int main(){
         Graph g(INPUT_SIZE);
         generateRandomV2UndirectedEdges(g);
         std::vector<double> times;
-        success += runTests(g, 0, 1, times, false, false) ? 1 : 0;
+        success += runTests(g, 0, 1, times, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
     }
 
@@ -80,6 +80,8 @@ void generateRandomV2DirectedEdges(Graph& g){
     std::default_random_engine generator(std::random_device{}());;
     std::uniform_int_distribution<int> distribution(INT_MIN + 1, INT_MAX - 1);
 
+    g.setDirected(true);
+
     for(int i = 0; i < g.size(); ++i){
         for(int j = 0; j < g.size(); ++j){
             if(i != j){
@@ -94,6 +96,8 @@ void generateRandomV2DirectedEdges(Graph& g){
 void generateRandomV2UndirectedEdges(Graph& g){
     std::default_random_engine generator(std::random_device{}());;
     std::uniform_int_distribution<int> distribution(INT_MIN + 1, INT_MAX - 1);
+
+    g.setDirected(false);
 
     for(int i = 0; i < g.size(); ++i){
         for(int j = i + 1; j < g.size(); ++j){
@@ -110,6 +114,8 @@ void generateRandomOVDirectedEdges(Graph& g){
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
     std::uniform_int_distribution<int> edges_distribution(0, g.size());
     int goal = std::rand() % g.size();
+
+    g.setDirected(true);
 
     for(int i = 0; i < g.size(); ++i){
         for(int j = 0; j < g.size(); ++j){
@@ -128,6 +134,8 @@ void generateRandomOVUndirectedEdges(Graph& g){
     std::uniform_int_distribution<int> edges_distribution(0, g.size());
     int goal = std::rand() % g.size();
 
+    g.setDirected(false);
+
     for(int i = 0; i < g.size(); ++i){
         for(int j = i + 1; j < g.size(); ++j){
             if(edges_distribution(generator) == goal){
@@ -140,6 +148,7 @@ void generateRandomOVUndirectedEdges(Graph& g){
 }
 
 void generateConstantO1Edges(Graph& g){
+    g.setDirected(true);
     if(g.size() < 5){
         return;
     }
@@ -153,6 +162,7 @@ void generateConstantO1Edges(Graph& g){
 }
 
 void generateConstantOVEdges(Graph& g){
+    g.setDirected(true);
     for(int i = 2; i < g.size(); ++i){
         g.addEdge(i, i - 1, 10);
     }
@@ -201,12 +211,9 @@ double printTimeSpecs(std::string name, struct timespec time_s, struct timespec 
 
 // Funkcija runTests izvrsava testove tj. widestPath(g, src, dest)
 // za sve razlocite implementacije algoritma widestPath.
-// Zbog velike prostorne slozenosti, stazmerne sa V!
-// algoritam widestPathBruteForce se iskljucuje iz nekih testova.
 // Alg. widestPathBruteForce je ukljucen u testove akko je flag incbf true.
 // Vremena izvrsavanja algoritama se vracaju kroz times
-// Flag directed je true akko je graf usmeren, a false akko je neusmeren.
-bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf, bool directed){
+bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf){
     std::vector<std::pair<Path, int>> ps;
     Path path;
     struct timespec time_s, time_e;
@@ -249,7 +256,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     printPath(path);
     result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
 
-    if(directed == false){
+    if(g.isDirected() == false){
         clock_gettime(CLOCK_MONOTONIC, &time_s);
         path = widestPathInUndirectedGraph(g, src, dest);
         clock_gettime(CLOCK_MONOTONIC, &time_e);

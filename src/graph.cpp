@@ -10,10 +10,19 @@ Graph::Graph(int size){
 
 Graph::Graph(const Graph& g){
     adj = g.adj;
+    directed = g.isDirected();
 }
 
 int Graph::size() const{
     return adj.size();
+}
+
+bool Graph::isDirected() const{
+    return directed;
+}
+
+void Graph::setDirected(bool directed){
+    this->directed = directed;
 }
 
 std::vector<Edge>& Graph::operator[] (int index){

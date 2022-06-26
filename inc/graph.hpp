@@ -61,6 +61,8 @@ class Graph{
     Graph(const Graph& g);
 
     int size() const;
+    bool isDirected() const;
+    void setDirected(bool directed);
     std::vector<Edge>& operator[] (int index);
     const std::vector<Edge>& operator[] (int index) const;
 
@@ -91,6 +93,8 @@ class Graph{
     // Lista susedstava grafa
     // Susedni cvorovi cvora v, nalaze se u adj[v]
     std::vector<std::vector<Edge>> adj;
+    // Da li je graf usmeren. Koristi se da obustavi testiranje algoritama koji su impl samo za neusmerene grafove
+    bool directed = true;
 };
 
 void swap(Edge& e1, Edge& e2);
