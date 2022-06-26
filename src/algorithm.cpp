@@ -73,16 +73,9 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
         }
     }
 
-    if(visited[dest] == false){
-        return {};
+    if(visited[dest]){
+        formPath(src, dest, pred, path);
     }
-
-    int v = dest;
-    while(v != src){
-        path.push_front(v);
-        v = pred[v];
-    }
-    path.push_front(src);
 
     return path;
 }

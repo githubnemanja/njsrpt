@@ -158,12 +158,7 @@ void Graph::findPath(int src, int dest, Path& path) const{
     std::vector<int> pred(size());
     findPathDFS(src, visited, pred);
     if(visited[dest]){
-        int t = dest;
-        while(t != src){
-            path.push_front(t);
-            t = pred[t];
-        }
-        path.push_front(src);
+        formPath(src, dest, pred, path);
     }
 }
 
@@ -194,12 +189,7 @@ void Graph::findPath(int src, int dest, int bottleneck, Path& path) const{
     std::vector<int> pred(size());
     findPathDFS(src, visited, bottleneck, pred);
     if(visited[dest]){
-        int t = dest;
-        while(t != src){
-            path.push_front(t);
-            t = pred[t];
-        }
-        path.push_front(src);
+        formPath(src, dest, pred, path);
     }
 }
 
@@ -387,6 +377,20 @@ void swap(EdgeId& e1, EdgeId& e2){
     Edge* t = e1.addr;
     e1.addr = e2.addr;
     e2.addr = t;
+}
+
+// Formira put path od src do dest koristeci niz prethodnika pred
+// Pretpostavka je da je pred korektno popunjen
+void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
+    path = {};
+    if(src == dest){
+        return;
+    }
+    while(dest != src){
+        path.push_front(dest);
+        dest = pred[dest];
+    }
+    path.push_front(src);
 }
 
 void printPath(const Path& p){

@@ -96,6 +96,7 @@ class Graph{
 void swap(Edge& e1, Edge& e2);
 void swap(EdgeId& e1, EdgeId& e2);
 
+void formPath(int src, int dest, const std::vector<int>& pred, Path& path);
 void printPath(const Path& p);
 std::ostream& operator<< (std::ostream& os, const Graph& g);
 std::string toString(std::vector<EdgeId> vec);
