@@ -15,9 +15,9 @@
 
 void maxminBruteForceHelper(const Graph& g, int src, int dest, std::vector<bool>& visited, int minEdge, int& maxmin);
 int maxminBruteForce(const Graph& g, int src, int dest);
-Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck);
 int median_of_medians(std::vector<EdgeId> edges, int n , int k);
 int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::vector<int>& T);
+Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck);
 
 // -----------------------------------------------------------------------------------------------------------------------
 // Implementacija algoritama za pronalazenje najsireg puta
@@ -93,7 +93,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
         return {};
     }
 
-    //pronadji najmanju i najvecu granu u grafu
+    // BFS obilaskom grafa pronadji najmanju i najvecu granu u grafu
     visited[src] = 1;
 
     q.push_back(src);
@@ -115,7 +115,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
         }
     }
 
-    // Binarna pretraga po tezini grane
+    // Binarnom pretragom po tezini grane intervala [minEdge, maxEdge], odrediti najsiri put path
     l = minEdge;
     r = maxEdge;
     while(l <= r){

@@ -56,7 +56,7 @@ int Graph::deleteEdges(int bottleneck){
     return num_deleted;
 }
 
-// Funkcija getEdgeIds vraca sve grane grafa. Cuva ih u strukturi edges.
+// Funkcija getEdgeIds vraca sve grane grafa. Rezultat cuva u strukturi edges.
 void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
     for(int i = 0; i < adj.size(); ++i){
         for(auto edge : adj[i]){
