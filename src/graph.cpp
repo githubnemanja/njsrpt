@@ -4,6 +4,10 @@
 #include <iterator>
 #include "graph.hpp"
 
+// -----------------------------------------------------------------------------------------------------------------------
+// Definicije osnovnih funkcionalnosti klase Graph
+// -----------------------------------------------------------------------------------------------------------------------
+
 Graph::Graph(int size){
     adj.resize(size);
 }
@@ -74,22 +78,22 @@ void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
     }
 }
 
-std::string Graph::toString() const{
-    std::string str = "[graph] size=" + std::to_string(size()) + " edges={";
+// -----------------------------------------------------------------------------------------------------------------------
+// Definicije Osnovnih grafovskih algoritama
+// -----------------------------------------------------------------------------------------------------------------------
 
-    for(int i = 0; i < size(); ++i){
-        for(auto & edge : adj[i]){
-            str += " (" + std::to_string(i) + "," + std::to_string(edge.dest) + "," + std::to_string(edge.weight) + "," + std::to_string(edge.order) + ")";
-        }
+// Formira put path od src do dest koristeci niz prethodnika pred
+// Pretpostavka je da je pred korektno popunjen
+void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
+    path = {};
+    if(src == dest){
+        return;
     }
-
-    str += " }";
-
-    return str;
-}
-
-void Graph::printGraph() const{
-    std::cout << *this << std::endl;
+    while(dest != src){
+        path.push_front(dest);
+        dest = pred[dest];
+    }
+    path.push_front(src);
 }
 
 // Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
@@ -321,9 +325,14 @@ void Graph::shrink(const std::vector<int>& comp, int comp_size){
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------------------
+// Definicije ostalih operacija sa granama
+// -----------------------------------------------------------------------------------------------------------------------
+
 // Funkcija getMinEdge racuna minimalnu granu na putu path
 // Ako put postoji return je true i vrednost najmanje grane se cuva u promenljivoj min_edge
 // Ako put ne postoji return je false
+// Ovaj funkcija se koristi za proveru ispravnosti algoritma
 bool Graph::getMinEdge(const Path& path, int& min_edge) const{
     int src = path.front();
     int dest;
@@ -354,7 +363,6 @@ bool Graph::getMinEdge(const Path& path, int& min_edge) const{
     min_edge = min;
     return true;
 }
-
 
 void swap(Edge& e1, Edge& e2){
     int tmp;
@@ -388,19 +396,9 @@ void swap(EdgeId& e1, EdgeId& e2){
     e2.addr = t;
 }
 
-// Formira put path od src do dest koristeci niz prethodnika pred
-// Pretpostavka je da je pred korektno popunjen
-void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
-    path = {};
-    if(src == dest){
-        return;
-    }
-    while(dest != src){
-        path.push_front(dest);
-        dest = pred[dest];
-    }
-    path.push_front(src);
-}
+// -----------------------------------------------------------------------------------------------------------------------
+// Definicije debug funkcija
+// -----------------------------------------------------------------------------------------------------------------------
 
 void printPath(const Path& p){
     bool fst = true;
@@ -423,11 +421,6 @@ std::string Edge::toString() const{
 
 std::string EdgeId::toString() const{
     return "(" + std:: to_string(src) + "," + std:: to_string(dest) + "," + std::to_string(weight) + ")";
-}
-
-std::ostream& operator<< (std::ostream& os, const Graph& g){
-    os << g.toString();
-    return os;
 }
 
 std::string toString(std::vector<EdgeId> vec){
@@ -459,4 +452,27 @@ std::string toString(std::vector<int> vec){
     str += "]";
 
     return str;
+}
+
+std::string Graph::toString() const{
+    std::string str = "[graph] size=" + std::to_string(size()) + " edges={";
+
+    for(int i = 0; i < size(); ++i){
+        for(auto & edge : adj[i]){
+            str += " (" + std::to_string(i) + "," + std::to_string(edge.dest) + "," + std::to_string(edge.weight) + "," + std::to_string(edge.order) + ")";
+        }
+    }
+
+    str += " }";
+
+    return str;
+}
+
+void Graph::printGraph() const{
+    std::cout << *this << std::endl;
+}
+
+std::ostream& operator<< (std::ostream& os, const Graph& g){
+    os << g.toString();
+    return os;
 }
