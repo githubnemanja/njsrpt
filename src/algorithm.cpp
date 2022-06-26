@@ -150,31 +150,23 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         return {};
     }
 
+    // 1. Odrediti bottleneck
     gc.getEdgeIds(edges);
 
     while(gc.size() > 1 && !edges.empty()){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
-        // ignorisi grane manje od M
         if(gc.connected(_src, _dest, M)){
-            // ako put postoji zapamti M kao trenutni kapacitet najsireg puta
+            // ako put (u podgrafu) postoji zapamti M kao trenutni kapacitet najsireg puta
             bottleneck = M;
             // izbrisi grane tezine manje ili jednake M iz grafa
-            int num_deleted = gc.deleteEdges(M + 1);
-            if(num_deleted == 0){
-                std::cout << "[widestPathInUndirectedGraph][ERROR] Did not delete any edges!" << std::endl;
-            }
+            gc.deleteEdges(M + 1);
         }
         else {
-            // ako ne postoji put pronadji povezujuce komponente
+            // ako put (u podrafu) ne postoji pronadji komponente povezanosti (u podgrafu)
             int comp_num = gc.connected_components(M, comp);
-
-            if(comp_num < 2){
-                std::cout << "[widestPathInUndirectedGraph][ERROR] comp_num=" << comp_num << std::endl;
-            }
-            // id cvora postaje id povezujuce komponente u novom grafu
+            // id cvora postaje id komponente povezanosti u novom grafu
             _src = comp[_src];
             _dest = comp[_dest];
-            // ponovo koristi grane manje od M tj. sve grane
             // sazmi graf
             gc.shrink(comp, comp_num);
         }
@@ -183,6 +175,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         gc.getEdgeIds(edges);
     }
 
+    // 2. Na osnovu bottleneck pronaci put u grafu
     Path path;
     g.findPath(src, dest, bottleneck, path);
     return path;
