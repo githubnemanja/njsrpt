@@ -27,6 +27,10 @@ Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottlene
 Path widestPathBruteForce(const Graph& g, int src, int dest){
     Path path;
 
+    if(src == dest){
+        return {};
+    }
+
     int maxmin = maxminBruteForce(g, src, dest);
     g.findPath(src, dest, maxmin, path);
 
@@ -35,7 +39,7 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
 
 // Funkcija widestPathDijkstra vraca najsiri put od cvora src do cvora dest u grafu g
 Path widestPathDijkstra(const Graph& g, int src, int dest){
-    int v = 0;
+    // distance_from_src[v] predstavlja kapacitet najsireg puta od src do v, sto se jos naziva kapacitet cvora v
     std::vector<int> distance_from_src(g.size(), INT_MIN);
     std::vector<int> pred(g.size());
     std::vector<bool> visited(g.size(), false);
@@ -51,28 +55,34 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
     heap.push({distance_from_src[src], src});
 
     while(!heap.empty()){
-        v = heap.top().val;
+        // skini sa hipa cvor koji ima najveci kapacitet
+        int v = heap.top().val;
         heap.pop();
+        // posto je to najveci kapacitet u hipu pronadjen je najsiri put do v, pa se v oznacava
         visited[v] = true;
+        // obrada neoznacenih suseda cvora v
         for(auto & cur : g[v]){
             if(visited[cur.dest] == false){
+                // modifikuj kapacitet suseda ako je manji od kapaciteta puta: najsiri put do v unija grana (v, sused)
                 if(distance_from_src[cur.dest] < distance_from_src[v] && distance_from_src[cur.dest] < cur.weight){
                     distance_from_src[cur.dest] = distance_from_src[v] < cur.weight ? distance_from_src[v] : cur.weight;
                     pred[cur.dest] = v;
+                    heap.push({distance_from_src[cur.dest], cur.dest});
                 }
-                heap.push({distance_from_src[cur.dest], cur.dest});
             }
         }
     }
 
-    if(distance_from_src[dest] != INT_MIN){
-        path.push_front(dest);
-        v = dest;
-        while(v != src){
-            v = pred[v];
-            path.push_front(v);
-        }
+    if(visited[dest] == false){
+        return {};
     }
+
+    int v = dest;
+    while(v != src){
+        path.push_front(v);
+        v = pred[v];
+    }
+    path.push_front(src);
 
     return path;
 }
@@ -153,17 +163,16 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
         // ignorisi grane manje od M
         if(gc.connected(_src, _dest, M)){
-            // postoji put
+            // ako put postoji zapamti M kao trenutni kapacitet najsireg puta
             bottleneck = M;
-            // izbrisi grane tezine manje od M iz grafa
+            // izbrisi grane tezine manje ili jednake M iz grafa
             int num_deleted = gc.deleteEdges(M + 1);
             if(num_deleted == 0){
                 std::cout << "[widestPathInUndirectedGraph][ERROR] Did not delete any edges!" << std::endl;
             }
         }
         else {
-            // ne postoji put
-            // pronadji povezujuce komponente
+            // ako ne postoji put pronadji povezujuce komponente
             int comp_num = gc.connected_components(M, comp);
 
             if(comp_num < 2){
@@ -196,7 +205,7 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
         return {};
     }
 
-    // Odrediti grane grafa
+    // Sacuvati trenutne grane grafa u edges
     // Odrediti mininalnu i maksimalnu granu grafa
     for(int i = 0; i < g.size(); ++i){
         for(auto & edge : g[i]){
@@ -213,7 +222,7 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
     std::vector<EdgeId> E = edges;
     int iterationCount = 0;
     int L = minEdge;
-    int U = maxEdge;
+    int R = maxEdge;
     int sm = log2(edges.size());
     while(iterationCount < sm){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
@@ -228,7 +237,7 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
             L = M;
         }
         else{
-            U = M;
+            R = M;
         }
         iterationCount++;
     }
@@ -246,7 +255,7 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
             if(edge.weight <= L){
                 edge.order = 0;
             }
-            if(edge.weight > U){
+            if(edge.weight > R){
                 edge.order = edges.size() + 1;
             }
         }
