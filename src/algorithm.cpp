@@ -23,6 +23,7 @@ Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottlene
 // Implementacija algoritama za pronalazenje najsireg puta
 // -----------------------------------------------------------------------------------------------------------------------
 
+// @thesis najsiriPutGrubaSila
 // Funkcija widestPathBruteForce vraca najsiri put od cvora src do cvora dest u grafu g
 Path widestPathBruteForce(const Graph& g, int src, int dest){
     Path path;
@@ -37,6 +38,7 @@ Path widestPathBruteForce(const Graph& g, int src, int dest){
     return path;
 }
 
+// @thesis najsiriPutDijkstra
 // Funkcija widestPathDijkstra vraca najsiri put od cvora src do cvora dest u grafu g
 Path widestPathDijkstra(const Graph& g, int src, int dest){
     // distance_from_src[v] predstavlja kapacitet najsireg puta od src do v, sto se jos naziva kapacitet cvora v
@@ -80,6 +82,7 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
     return path;
 }
 
+// @thesis najsiriPutBinarnaPretraga
 // Funkcija widestPathMedianEdgeWeight vraca najsiri put od cvora src do cvora dest u grafu g
 Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     int minEdge = INT_MAX;
@@ -136,6 +139,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     return path;
 }
 
+// @thesis najsiriPutUNeusmerenomGrafu
 // Funkcija widestPathInUndirectedGraph vraca najsiri put od cvora src do cvora dest u grafu g
 // Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
@@ -181,6 +185,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     return path;
 }
 
+// @thesis najsiriPutSortiraneGrane
 // Funkcija widestPathInUndirectedGraph vraca najsiri put od cvora src do cvora dest u grafu g
 Path widestPathEdgesOrdering(Graph g, int src, int dest){
     int minEdge = INT_MAX;
@@ -260,6 +265,7 @@ Path widestPathEdgesOrdering(Graph g, int src, int dest){
 // Definicije lokalnih funkcija
 // -----------------------------------------------------------------------------------------------------------------------
 
+// @thesis maxminGrubaSilaPomocna
 // Funkcija maxminBruteForceHelper je pomocna funkcija koja rekurzivno prolazi kroz sve puteve koji polaze od cvora src,
 // cuvajuci kapacitet trenutnog puta u rekurziji. Ako se put zavrsava u ciljnom cvoru d, tada funkcija modifikuje
 // trenutni maxmin, i na kraju izvrsavanja maxmin predstavlja kapacitet najsireg puta od cvora src do dvora dest u grafu G
@@ -284,6 +290,7 @@ void maxminBruteForceHelper(const Graph& g, int src, int dest, std::vector<bool>
     visited[src] = false;
 }
 
+// @thesis maxminGrubaSila
 // Funkcija maxminBruteForce vraca kapacitet najsireg puta od cvora src do cvora dest u grafu g
 int maxminBruteForce(const Graph& g, int src, int dest){
     std::vector<bool> visited(g.size(), false);

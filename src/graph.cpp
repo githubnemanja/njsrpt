@@ -82,6 +82,7 @@ void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
 // Definicije Osnovnih grafovskih algoritama
 // -----------------------------------------------------------------------------------------------------------------------
 
+// @thesis formirajPutOdNizaPrethodnika
 // Formira put path od src do dest koristeci niz prethodnika pred
 // Pretpostavka je da je pred korektno popunjen
 void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
@@ -96,6 +97,7 @@ void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
     path.push_front(src);
 }
 
+// @thesis povezanDFS
 // Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
 void Graph::connectedDFS(int src, std::vector<bool>& visited) const{
     visited[src] = true;
@@ -108,6 +110,7 @@ void Graph::connectedDFS(int src, std::vector<bool>& visited) const{
     }
 }
 
+// @thesis povezan
 // Funkcija connected proverava da li postoji put u grafu od cvora src do cvora dest.
 // Ako put postoji funkcija vraca true. Inace vraca false.
 // Kada je src == dest funkcija vraca false.
@@ -147,6 +150,7 @@ bool Graph::connected(int src, int dest, int bottleneck) const{
     return visited[dest];
 }
 
+// @thesis nadjiPutDFS
 // Funkcija findPathDFS se koristi kao pomocna za findPath i predstavlja obilazak grafa u dubinu
 void Graph::findPathDFS(int src, std::vector<bool>& visited, std::vector<int>& pred) const{
     visited[src] = true;
@@ -160,6 +164,7 @@ void Graph::findPathDFS(int src, std::vector<bool>& visited, std::vector<int>& p
     }
 }
 
+// @thesis nadjiPut
 // Funkcija findPath vraca put u grafu od cvora src do cvora dest.
 // Put se smesta u strukturu path.
 void Graph::findPath(int src, int dest, Path& path) const{
@@ -175,6 +180,7 @@ void Graph::findPath(int src, int dest, Path& path) const{
     }
 }
 
+// @thesis nadjiPutUPodgrafuDFS
 // Funkcija findPathDFS se koristi kao pomocna za findPath i predstavlja obilazak grafa u dubinu
 // Algoritam ignorise grane manje od bottleneck
 void Graph::findPathDFS(int src, std::vector<bool>& visited, int bottleneck, std::vector<int>& pred) const{
@@ -190,6 +196,7 @@ void Graph::findPathDFS(int src, std::vector<bool>& visited, int bottleneck, std
     }
 }
 
+// @thesis nadjiPutUPodgrafu
 // Funkcija findPath vraca put u grafu od cvora src do cvora dest.
 // Put se smesta u strukturu path.
 // Prilikom trazenja puta algoritam ignorise grane manje od bottleneck.
@@ -207,6 +214,7 @@ void Graph::findPath(int src, int dest, int bottleneck, Path& path) const{
 }
 
 
+// @thesis komponentePovezanostiDFS
 // Funkcija connected_components_dfs se koristi kao pomocna za connected_components i predstavlja obilazak grafa u dubinu
 void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const{
     visited[src] = true;
@@ -235,6 +243,7 @@ void Graph::connected_components_dfs(int src, std::vector<bool>& visited, int bo
     }
 }
 
+// @thesis komponentePovezanosti
 // Funkcija connected_components pronalazi povezane komponente u neusmerenom grafu
 // koristeci DFS pristup. Povezana komponenta je skup cvorova koji su svi dostizni
 // medju sobom. Rezultat algoritma se cuva u strukturi comp, koja predstavlja niz
