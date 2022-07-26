@@ -62,6 +62,10 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
         heap.pop();
         // posto je to najveci kapacitet u hipu pronadjen je najsiri put do v, pa se v oznacava
         visited[v] = true;
+        // ako je v upravo ciljni cvor prekidamo petlju jer je trazeni najsiri put pronadjen
+        if(v == dest){
+            break;
+        }
         // obrada neoznacenih suseda cvora v
         for(auto & cur : g[v]){
             if(visited[cur.dest] == false){
