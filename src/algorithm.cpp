@@ -45,6 +45,12 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
     std::vector<int> distance_from_src(g.size(), INT_MIN);
     std::vector<int> pred(g.size());
     std::vector<bool> visited(g.size(), false);
+    std::vector<bool> inQueue(g.size(), false);
+
+    std::vector<boost::heap::detail::node_handle<boost::heap::detail::marked_heap_node<HeapNode> *,
+     boost::heap::detail::make_fibonacci_heap_base<HeapNode, 
+     boost::parameter::aux::flat_like_arg_list<boost::parameter::aux::flat_like_arg_tuple<boost::heap::tag::compare, 
+     boost::heap::compare<CompareHeapNode>, boost::mp11::mp_true>>>::type, HeapNode &>> handle(g.size());
     boost::heap::fibonacci_heap<HeapNode, boost::heap::compare<CompareHeapNode>> heap;
     Path path;
 
@@ -54,7 +60,8 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
 
     visited[src] = true;
     distance_from_src[src] = INT_MAX;
-    heap.push({distance_from_src[src], src});
+    handle[src] = heap.push({distance_from_src[src], src});
+    inQueue[src] = true;
 
     while(!heap.empty()){
         // skini sa hipa cvor koji ima najveci kapacitet
@@ -62,6 +69,7 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
         heap.pop();
         // posto je to najveci kapacitet u hipu pronadjen je najsiri put do v, pa se v oznacava
         visited[v] = true;
+        inQueue[v] = false;
         // ako je v upravo ciljni cvor prekidamo petlju jer je trazeni najsiri put pronadjen
         if(v == dest){
             break;
@@ -73,7 +81,13 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
                 if(distance_from_src[cur.dest] < distance_from_src[v] && distance_from_src[cur.dest] < cur.weight){
                     distance_from_src[cur.dest] = distance_from_src[v] < cur.weight ? distance_from_src[v] : cur.weight;
                     pred[cur.dest] = v;
-                    heap.push({distance_from_src[cur.dest], cur.dest});
+                    if(inQueue[cur.dest]){
+                        heap.increase(handle[cur.dest], {distance_from_src[cur.dest], cur.dest});
+                    }
+                    else{
+                        handle[cur.dest] = heap.push({distance_from_src[cur.dest], cur.dest});
+                        inQueue[cur.dest] = true;
+                    }
                 }
             }
         }
