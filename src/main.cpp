@@ -270,11 +270,8 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         times.push_back(0);
     }
 
-    // Iskopirati graf zbog problema sa const
-    // Algoritam modifikuje Edge.order pa graf nije const
-    Graph gc(g);
     clock_gettime(CLOCK_MONOTONIC, &time_s);
-    path = widestPathEdgesOrdering(gc, src, dest);
+    path = widestPathEdgesOrdering(g, src, dest);
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathEdgesOrdering", time_s, time_e);
     times.push_back(duration);

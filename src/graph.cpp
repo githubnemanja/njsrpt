@@ -99,15 +99,23 @@ void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
 
 // @thesis postojiPutDFS
 // Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
-void Graph::connectedDFS(int src, std::vector<bool>& visited) const{
+bool Graph::connectedDFS(int src, int dest, std::vector<bool>& visited) const{
     visited[src] = true;
+
+    if(src == dest){
+        return true;
+    }
 
     // obrada neoznacenih suseda cvora src
     for(auto & cur : adj[src]){
         if(visited[cur.dest] == false){
-            connectedDFS(cur.dest, visited);
+            if(connectedDFS(cur.dest, dest, visited)){
+                return true;
+            }
         }
     }
+
+    return false;
 }
 
 // @thesis postojiPut
@@ -119,22 +127,29 @@ bool Graph::connected(int src, int dest) const{
         return false;
     }
     std::vector<bool> visited(size(), false);
-    connectedDFS(src, visited);
-    return visited[dest];
+    return connectedDFS(src, dest, visited);
 }
 
 // Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
 // Algoritam ignorise grane manje od bottleneck
-void Graph::connectedDFS(int src, std::vector<bool>& visited, int bottleneck) const{
+bool Graph::connectedDFS(int src, int dest, std::vector<bool>& visited, int bottleneck) const{
     visited[src] = true;
+
+    if(src == dest){
+        return true;
+    }
 
     // obrada neoznacenih suseda cvora src
     // ignorisi grane manje od bottleneck
     for(auto & cur : adj[src]){
         if(visited[cur.dest] == false && cur.weight >= bottleneck){
-            connectedDFS(cur.dest, visited, bottleneck);
+            if(connectedDFS(cur.dest, dest, visited, bottleneck)){
+                return true;
+            }
         }
     }
+
+    return false;
 }
 
 // Funkcija connected proverava da li postoji put u grafu od cvora src do cvora dest.
@@ -146,8 +161,7 @@ bool Graph::connected(int src, int dest, int bottleneck) const{
         return false;
     }
     std::vector<bool> visited(size(), false);
-    connectedDFS(src, visited, bottleneck);
-    return visited[dest];
+    return connectedDFS(src, dest, visited, bottleneck);
 }
 
 // @thesis nadjiPutDFS

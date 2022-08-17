@@ -83,8 +83,8 @@ class Graph{
     void printGraph() const;
 
     private:
-    void connectedDFS(int src, std::vector<bool>& visited) const;
-    void connectedDFS(int src, std::vector<bool>& visited, int bottleneck) const;
+    bool connectedDFS(int src, int dest, std::vector<bool>& visited) const;
+    bool connectedDFS(int src, int dest, std::vector<bool>& visited, int bottleneck) const;
     void findPathDFS(int src, std::vector<bool>& visited, std::vector<int>& pred) const;
     void findPathDFS(int src, std::vector<bool>& visited, int bottleneck, std::vector<int>& pred) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;

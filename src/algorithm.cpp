@@ -217,15 +217,15 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
 
 // @thesis najsiriPutSortiraneGrane
 // Funkcija widestPathInUndirectedGraph vraca najsiri put od cvora src do cvora dest u grafu g
-Path widestPathEdgesOrdering(const Graph& gin, int src, int dest){
-    if(src == dest || !gin.connected(src, dest)){
+// Funkcija menja order od grana pa Graph nije const
+Path widestPathEdgesOrdering(Graph& g, int src, int dest){
+    if(src == dest || !g.connected(src, dest)){
         return {};
     }
 
     int minEdge = INT_MAX;
     int maxEdge = INT_MIN;
     std::vector<EdgeId> edges;
-    Graph g(gin);
 
     // Sacuvati trenutne grane grafa u edges
     // Odrediti mininalnu i maksimalnu granu grafa

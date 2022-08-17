@@ -34,6 +34,6 @@ Path widestPathBruteForce(const Graph& g, int src, int dest);
 Path widestPathDijkstra(const Graph& g, int src, int dest);
 Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest);
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest);
-Path widestPathEdgesOrdering(const Graph& g, int src, int dest);
+Path widestPathEdgesOrdering(Graph& g, int src, int dest);
 
 #endif
