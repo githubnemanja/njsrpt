@@ -34,9 +34,9 @@ void printResult(int success, int total);
 // -----------------------------------------------------------------------------------------------------------------------
 
 int main(){
-    const int NUM_OF_TESTS = 100;
+    const int NUM_OF_TESTS = 10;
     const int NUM_OF_ALGOS = 5;
-    int INPUT_SIZE  = 30;
+    int INPUT_SIZE  = 1000;
 
     std::vector<std::pair<std::string, double>> avgs{
         {"widestPathBruteForce", 0},
@@ -55,7 +55,7 @@ int main(){
     int success = 0;
     for(int i = 0; i < NUM_OF_TESTS; ++i){
         Graph g(INPUT_SIZE);
-        generateRandomV2UndirectedEdges(g);
+        generateRandomOVUndirectedEdges(g);
         std::vector<double> times;
         success += runTests(g, 0, 1, times, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
@@ -210,7 +210,7 @@ double printTimeSpecs(std::string name, struct timespec time_s, struct timespec 
 }
 
 // Funkcija runTests izvrsava testove tj. widestPath(g, src, dest)
-// za sve razlocite implementacije algoritma widestPath.
+// za sve razlicite implementacije algoritma widestPath.
 // Alg. widestPathBruteForce je ukljucen u testove akko je flag incbf true.
 // Vremena izvrsavanja algoritama se vracaju kroz times
 bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incbf){

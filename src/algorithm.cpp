@@ -9,13 +9,15 @@
 #include <list>
 #include "algorithm.hpp"
 
+struct timespec time_s, time_e;
+
 // -----------------------------------------------------------------------------------------------------------------------
 // Deklaracije lokalnih funkcija
 // -----------------------------------------------------------------------------------------------------------------------
 
 void maxminBruteForceHelper(const Graph& g, int src, int dest, std::vector<bool>& visited, int minEdge, int& maxmin);
 int maxminBruteForce(const Graph& g, int src, int dest);
-int median_of_medians(std::vector<EdgeId> edges, int n , int k);
+int median_of_medians(std::vector<EdgeId>& edges, int n , int k);
 int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::vector<int>& T);
 Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck);
 
@@ -157,7 +159,7 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     return path;
 }
 
-// @thesis najsiriPutUNeusmerenomGrafu
+// @thesis najsiriPutSabijanjeKomponenti
 // Funkcija widestPathInUndirectedGraph vraca najsiri put od cvora src do cvora dest u grafu g
 // Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
@@ -175,8 +177,16 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     // 1. Odrediti bottleneck
     gc.getEdgeIds(edges);
 
+    // double total_time_median_of_medians = 0;
     while(gc.size() > 1 && !edges.empty()){
+        //std::cout << "edges_size: " << edges.size() << std::endl;
+        //clock_gettime(CLOCK_MONOTONIC, &time_s);
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
+        //clock_gettime(CLOCK_MONOTONIC, &time_e);
+        //double duration = (double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 +
+        //                  (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0;
+        //std::cout << "[" << "median_of_medians" << "]" << " [ms]:" << duration << " ";
+        // total_time_median_of_medians += duration;
         if(gc.connected(_src, _dest, M)){
             // ako put (u podgrafu) postoji zapamti M kao trenutni kapacitet najsireg puta
             bottleneck = M;
@@ -196,6 +206,8 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         edges.clear();
         gc.getEdgeIds(edges);
     }
+
+    // std::cout << std::endl << "[" << "median_of_medians total_time" << "]" << " [ms]:" << total_time_median_of_medians << std::endl;
 
     // 2. Na osnovu bottleneck pronaci put u grafu
     Path path;
@@ -335,7 +347,7 @@ Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottlene
 
 // Funkcija median_of_medians vraca k-ti po velicini element vektora edges.
 // Posmatra se samo deo vektora od indeksa 0 do indeksa n.
-int median_of_medians(std::vector<EdgeId> edges, int n , int k){
+int median_of_medians(std::vector<EdgeId>& edges, int n , int k){
     int i = 0;
     int j = 0;
     int pivot = 0;
@@ -373,26 +385,7 @@ int median_of_medians(std::vector<EdgeId> edges, int n , int k){
         }
     }
 
-    if(low <= k && k < n - high){
-        return pivot;
-    }
-    if(low < k){
-        i = 0;
-        j = n - 1;
-        while(i < j){
-            while(i < n && edges[i].weight >= pivot){
-                ++i;
-            }
-            while(j >=0 && edges[j].weight < pivot){
-                --j;
-            }
-            if(i < j){
-                swap(edges[i], edges[j]);
-            }
-        }
-        return median_of_medians(edges, n - low, k - low - 1);
-    }
-    else{
+    if(k < low){
         i = 0;
         j = n - 1;
         while(i < j){
@@ -404,9 +397,32 @@ int median_of_medians(std::vector<EdgeId> edges, int n , int k){
             }
             if(i < j){
                 swap(edges[i], edges[j]);
+                ++i;
+                --j;
             }
         }
         return median_of_medians(edges, low, k);
+    }
+    else if(k >= n - high){
+        i = 0;
+        j = n - 1;
+        while(i < j){
+            while(i < n && edges[i].weight > pivot){
+                ++i;
+            }
+            while(j >=0 && edges[j].weight <= pivot){
+                --j;
+            }
+            if(i < j){
+                swap(edges[i], edges[j]);
+                ++i;
+                --j;
+            }
+        }
+        return median_of_medians(edges, high, k - (n - high));
+    }
+    else{
+        return pivot;
     }
 }
 
