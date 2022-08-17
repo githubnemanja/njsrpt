@@ -68,8 +68,10 @@ class Graph{
 
     void addEdge(int src, int dest, int weight);
     void getEdgeIds(std::vector<EdgeId>& edges) const;
-    bool getMinEdge(const Path& path, int& min_edge) const;
+    void getEdges(int src, std::vector<EdgeId>& edges, int& minEdge, int& maxEdge) const;
     int deleteEdges(int bottleneck);
+
+    bool getMinEdge(const Path& path, int& min_edge) const;
 
     bool connected(int src, int dest) const;
     bool connected(int src, int dest, int bottleneck) const;
@@ -89,6 +91,7 @@ class Graph{
     void findPathDFS(int src, std::vector<bool>& visited, int bottleneck, std::vector<int>& pred) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int comp_id, std::vector<int>& comp) const;
     void connected_components_dfs(int src, std::vector<bool>& visited, int bottleneck, int comp_id, std::vector<int>& comp) const;
+    void getEdgesDFS(int src, std::vector<bool>& visited , std::vector<EdgeId>& edges, int& minEdge, int& maxEdge) const;
 
     // Lista susedstava grafa
     // Susedni cvorovi cvora v, nalaze se u adj[v]
