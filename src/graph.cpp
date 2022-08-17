@@ -97,7 +97,7 @@ void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
     path.push_front(src);
 }
 
-// @thesis povezanDFS
+// @thesis postojiPutDFS
 // Funkcija connectedDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
 void Graph::connectedDFS(int src, std::vector<bool>& visited) const{
     visited[src] = true;
@@ -110,7 +110,7 @@ void Graph::connectedDFS(int src, std::vector<bool>& visited) const{
     }
 }
 
-// @thesis povezan
+// @thesis postojiPut
 // Funkcija connected proverava da li postoji put u grafu od cvora src do cvora dest.
 // Ako put postoji funkcija vraca true. Inace vraca false.
 // Kada je src == dest funkcija vraca false.

@@ -34,9 +34,9 @@ void printResult(int success, int total);
 // -----------------------------------------------------------------------------------------------------------------------
 
 int main(){
-    const int NUM_OF_TESTS = 10;
+    const int NUM_OF_TESTS = 100;
     const int NUM_OF_ALGOS = 5;
-    int INPUT_SIZE  = 1000;
+    int INPUT_SIZE  = 10000;
 
     std::vector<std::pair<std::string, double>> avgs{
         {"widestPathBruteForce", 0},

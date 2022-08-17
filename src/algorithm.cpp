@@ -105,6 +105,10 @@ Path widestPathDijkstra(const Graph& g, int src, int dest){
 // @thesis najsiriPutBinarnaPretraga
 // Funkcija widestPathMedianEdgeWeight vraca najsiri put od cvora src do cvora dest u grafu g
 Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
+    if(src == dest || !g.connected(src, dest)){
+        return {};
+    }
+
     int minEdge = INT_MAX;
     int maxEdge = INT_MIN;
     int l = 0;
@@ -114,10 +118,6 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
     std::vector<bool> visited(g.size(), false);
     Path path, curPath;
     Queue q;
-
-    if(src == dest){
-        return {};
-    }
 
     // BFS obilaskom grafa pronadji najmanju i najvecu granu u grafu
     visited[src] = 1;
@@ -163,6 +163,10 @@ Path widestPathMedianEdgeWeight(const Graph& g, int src, int dest){
 // Funkcija widestPathInUndirectedGraph vraca najsiri put od cvora src do cvora dest u grafu g
 // Zbog specificne implementacije korektnost se garantuje samo za neusmerene grafove
 Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
+    if(src == dest || !g.connected(src, dest)){
+        return {};
+    }
+
     int bottleneck;
     int _src = src;
     int _dest = dest;
@@ -170,11 +174,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     std::vector<int> comp(g.size());
     Graph gc(g);
 
-    if(src == dest){
-        return {};
-    }
-
-    // 1. Odrediti bottleneck
+    // Odrediti grane grafa
     gc.getEdgeIds(edges);
 
     // double total_time_median_of_medians = 0;
@@ -217,14 +217,15 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
 
 // @thesis najsiriPutSortiraneGrane
 // Funkcija widestPathInUndirectedGraph vraca najsiri put od cvora src do cvora dest u grafu g
-Path widestPathEdgesOrdering(Graph g, int src, int dest){
+Path widestPathEdgesOrdering(const Graph& gin, int src, int dest){
+    if(src == dest || !gin.connected(src, dest)){
+        return {};
+    }
+
     int minEdge = INT_MAX;
     int maxEdge = INT_MIN;
     std::vector<EdgeId> edges;
-
-    if(src == dest){
-        return {};
-    }
+    Graph g(gin);
 
     // Sacuvati trenutne grane grafa u edges
     // Odrediti mininalnu i maksimalnu granu grafa
