@@ -39,7 +39,15 @@ const std::vector<Edge>& Graph::operator[] (int index) const{
 
 // Dodaj granu (src, dest) tezine weight u graf
 void Graph::addEdge(int src, int dest, int weight){
-    adj[src].push_back({dest, weight});
+    if(src < size()){
+        for(auto & cur : adj[src]){
+            if(cur.dest == dest){
+                //grana vec postoji
+                return;
+            }
+        }
+        adj[src].push_back({dest, weight});
+    }
 }
 
 // Obrisati sve grane u grafu cija je tezina manja od bottleneck i vratiti broj obrisanih grana

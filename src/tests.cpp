@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "time.h"
-#include <fstream>
 #include <random>
 #include <climits>
+#include <tuple>
 #include "graph.hpp"
 #include "algorithm.hpp"
 
@@ -11,6 +11,28 @@
 // -----------------------------------------------------------------------------------------------------------------------
 // Definicije lokalnih funkcija
 // -----------------------------------------------------------------------------------------------------------------------
+
+// Dodaje m random grana u graf g i postavlja direcred polje
+void generate(Graph& g, int m, bool directed){
+    std::default_random_engine generator(std::random_device{}());;
+    std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
+    std::uniform_int_distribution<int> edges_distribution(0, m);
+    int goal = std::rand() % m;
+
+    g.setDirected(directed);
+
+    for(int i = 0; i < g.size(); ++i){
+        for(int j = 0; j < g.size(); ++j){
+            if(i != j && edges_distribution(generator) == goal){
+                int weight = weights_distribution(generator);
+                g.addEdge(i, j, weight);
+                if(!directed){
+                    g.addEdge(j, i, weight);
+                }
+            }
+        }
+    }
+}
 
 // Dodaje u usmeren graf V^2 grana sa random tezinama
 void generateRandomV2DirectedEdges(Graph& g){
@@ -226,19 +248,30 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
 }
 
 // Funkcija updateAvgs se koristi za racunanje prosecnog vremena izvravanja testova
-void updateAvgs(std::vector<std::pair<std::string, double>>& avgs, std::vector<double> times, int divident){
+void updateAvgs(std::vector<std::pair<std::string, std::tuple<double, double, double>>>& avgs, std::vector<double> times, int divident){
     for(int i = 0; i < avgs.size(); ++i){
-        avgs[i].second += times[i] / divident;
+        if(std::get<0>(avgs[i].second) > times[i]){
+            std::get<0>(avgs[i].second) = times[i];
+        }
+
+        std::get<1>(avgs[i].second) += times[i] / divident;
+
+        if(std::get<2>(avgs[i].second) < times[i]){
+            std::get<2>(avgs[i].second) = times[i];
+        }
     }
 }
 
 // Funkcija printAvgs stampa na standardni izlaz prosecno vreme izvravanja testiranig algoritama
-void printAvgs(std::vector<std::pair<std::string, double>> avgs){
+void printAvgs(std::vector<std::pair<std::string, std::tuple<double, double, double>>> avgs){
     std::cout << "--------------------------------" << std::endl;
     std::cout << "[AVERAGE EXECUTION TIME]" << std::endl;
     std::cout << "--------------------------------" << std::endl;
     for(int i = 0; i < avgs.size(); ++i){
-        std::cout << "[" << avgs[i].first << "]" << " [ms]:" << avgs[i].second << std::endl;
+        std::cout << "[" << avgs[i].first << "]"<< " t_min(ms):" << std::get<0>(avgs[i].second)
+                                                << " t_avg(ms):" << std::get<1>(avgs[i].second)
+                                                << " t_max(ms):" << std::get<2>(avgs[i].second)
+                                                << std::endl;
     }
 }
 
