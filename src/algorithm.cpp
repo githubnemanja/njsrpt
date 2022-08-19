@@ -177,16 +177,8 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     // Odrediti grane grafa
     gc.getEdgeIds(edges);
 
-    // double total_time_median_of_medians = 0;
     while(gc.size() > 1 && !edges.empty()){
-        //std::cout << "edges_size: " << edges.size() << std::endl;
-        //clock_gettime(CLOCK_MONOTONIC, &time_s);
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
-        //clock_gettime(CLOCK_MONOTONIC, &time_e);
-        //double duration = (double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 +
-        //                  (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0;
-        //std::cout << "[" << "median_of_medians" << "]" << " [ms]:" << duration << " ";
-        // total_time_median_of_medians += duration;
         if(gc.connected(_src, _dest, M)){
             // ako put (u podgrafu) postoji zapamti M kao trenutni kapacitet najsireg puta
             bottleneck = M;
@@ -206,10 +198,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         edges.clear();
         gc.getEdgeIds(edges);
     }
-
-    // std::cout << std::endl << "[" << "median_of_medians total_time" << "]" << " [ms]:" << total_time_median_of_medians << std::endl;
-
-    // 2. Na osnovu bottleneck pronaci put u grafu
+    // Na osnovu bottleneck pronaci put u grafu
     Path path;
     g.findPath(src, dest, bottleneck, path);
     return path;

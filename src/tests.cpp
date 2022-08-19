@@ -4,6 +4,7 @@
 #include <random>
 #include <climits>
 #include <tuple>
+#include <iomanip>
 #include "graph.hpp"
 #include "algorithm.hpp"
 
@@ -14,10 +15,10 @@
 
 // Dodaje m random grana u graf g i postavlja direcred polje
 void generate(Graph& g, int m, bool directed){
-    std::default_random_engine generator(std::random_device{}());;
+    std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
-    std::uniform_int_distribution<int> edges_distribution(0, m);
-    int goal = std::rand() % m;
+    std::uniform_int_distribution<int> edges_distribution(0, (g.size()*g.size())/m-1);
+    int goal = ((g.size()*g.size())/m-1) > 0 ? std::rand() % ((g.size()*g.size())/m-1) : 0;
 
     g.setDirected(directed);
 
@@ -164,7 +165,7 @@ double printTimeSpecs(std::string name, struct timespec time_s, struct timespec 
     double duration = (double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 +
                       (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0;
 
-    std::cout << "[" << name << "]" << " [ms]:" << duration << " ";
+    //std::cout << "[" << name << "]" << " [ms]:" << duration << " ";
     return duration;
 }
 
@@ -181,9 +182,9 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     int prevbottleneck;
     bool result = true;
 
-    std::cout << "--------------------------------" << std::endl;
-    std::cout << "[runTests] src=" << src << ", dest=" << dest << std::endl;
-    std::cout << "--------------------------------" << std::endl;
+    //std::cout << "--------------------------------" << std::endl;
+    //std::cout << "[runTests] src=" << src << ", dest=" << dest << std::endl;
+    //std::cout << "--------------------------------" << std::endl;
 
     if(incbf){
         clock_gettime(CLOCK_MONOTONIC, &time_s);
@@ -191,11 +192,11 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         clock_gettime(CLOCK_MONOTONIC, &time_e);
         duration = printTimeSpecs("widestPathBruteForce", time_s, time_e);
         times.push_back(duration);
-        printPath(path);
+        //printPath(path);
         result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
     }
     else{
-        std::cout << "[widestPathBruteForce] [not executed] " << std::endl;
+        //std::cout << "[widestPathBruteForce] [not executed] " << std::endl;
         times.push_back(0);
     }
 
@@ -204,7 +205,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathDijkstra", time_s, time_e);
     times.push_back(duration);
-    printPath(path);
+    //printPath(path);
     result = check_result(g, src, dest, path, bottleneck, incbf ? false : true) ? result : false;
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
@@ -212,7 +213,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathMedianEdgeWeight", time_s, time_e);
     times.push_back(duration);
-    printPath(path);
+    //printPath(path);
     result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
 
     if(g.isDirected() == false){
@@ -221,7 +222,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         clock_gettime(CLOCK_MONOTONIC, &time_e);
         duration = printTimeSpecs("widestPathInUndirectedGraph", time_s, time_e);
         times.push_back(duration);
-        printPath(path);
+        //printPath(path);
         result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
     }
     else{
@@ -234,16 +235,16 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathEdgesOrdering", time_s, time_e);
     times.push_back(duration);
-    printPath(path);
+    //printPath(path);
     result = check_result(g, src, dest, path, bottleneck, false) ? result : false;
 
     if(result){
-        std::cout << "[success]" << std::endl;
+        //std::cout << "[success]" << std::endl;
     }
     else{
-        std::cout << "[ERROR][TEST FAILED]" << std::endl;
+        //std::cout << "[ERROR][TEST FAILED]" << std::endl;
     }
-    std::cout << "--------------------------------" << std::endl;
+    //std::cout << "--------------------------------" << std::endl;
     return result;
 }
 
@@ -267,11 +268,14 @@ void printAvgs(std::vector<std::pair<std::string, std::tuple<double, double, dou
     std::cout << "--------------------------------" << std::endl;
     std::cout << "[AVERAGE EXECUTION TIME]" << std::endl;
     std::cout << "--------------------------------" << std::endl;
+    std::cout << std::setw(28) << std::left << "format: [alg. name" << "][ms]: " << std::setw(15) << std::left << "t_min(ms) " << std::setw(15) << std::left << "t_avg(ms) " << std::setw(15) << std::left << "t_max(ms) " << std::endl;
+    std::cout << "--------------------------------" << std::endl;
     for(int i = 0; i < avgs.size(); ++i){
-        std::cout << "[" << avgs[i].first << "]"<< " t_min(ms):" << std::get<0>(avgs[i].second)
-                                                << " t_avg(ms):" << std::get<1>(avgs[i].second)
-                                                << " t_max(ms):" << std::get<2>(avgs[i].second)
-                                                << std::endl;
+        std::cout << "["<< std::setw(27) << std::left << avgs[i].first << "][ms]: "
+                        << std::setw(14) << std::left << std::get<0>(avgs[i].second) << " "
+                        << std::setw(14) << std::left << std::get<1>(avgs[i].second) << " "
+                        << std::setw(14) << std::left << std::get<2>(avgs[i].second) << " "
+                        << std::endl;
     }
 }
 

@@ -9,6 +9,7 @@
 
 const int NUM_OF_TESTS = 100;
 const int INPUT_SIZE  = 10;
+const int NUM_OF_EDGES  = 100;
 
 int main(){
     std::vector<std::pair<std::string, std::tuple<double, double, double>>> avgs{
@@ -28,9 +29,9 @@ int main(){
     int success = 0;
     for(int i = 0; i < NUM_OF_TESTS; ++i){
         Graph g(INPUT_SIZE);
-        generate(g, INPUT_SIZE, false);
+        generate(g, NUM_OF_EDGES, false);
         std::vector<double> times;
-        success += runTests(g, 0, 1, times, true) ? 1 : 0;
+        success += runTests(g, 0, 1, times, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
     }
 
