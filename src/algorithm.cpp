@@ -7,6 +7,7 @@
 #include <math.h>
 #include <algorithm>
 #include <list>
+#include "time.h"
 #include "algorithm.hpp"
 
 struct timespec time_s, time_e;
@@ -230,12 +231,11 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
         }
     }
 
-    std::vector<EdgeId> E = edges;
     int iterationCount = 0;
     int L = minEdge;
     int R = maxEdge;
-    int sm = log2(edges.size());
-    while(iterationCount < sm){
+    int k = log2(edges.size());
+    while(iterationCount < k){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
         if(g.connected(src, dest, M + 1)){
             std::vector<EdgeId> new_edges;
@@ -416,21 +416,21 @@ int median_of_medians(std::vector<EdgeId>& edges, int n , int k){
     }
 }
 
-// Funkcija bottlemeckSortedEdgeWeights vraca bottleneck tj. najmanju granu najsireg puta
+// Funkcija bottleneckSortedEdges vraca bottleneck tj. najmanju granu najsireg puta
 // od cvora src do cvora dest u grafu g. Podrazumeva se da put postoji.
-// Ovaj algoritam zahteva da postoji uredjenje grana grafa po tezini tj. da su predhodno sortirane
+// Ovaj algoritam zahteva da postoji uredjenje grana grafa po tezini tj. da su prethodno sortirane
 // Argument M predstavlja broj razlicitih vrednosti Edge.order
-// Tabela T mapira redosled grane u tezinu grane, T[order] = weight
+// Tabela T preslikava redosled grane u tezinu grane, T[order] = weight
 int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::vector<int>& T){
-    // Buket, niz skupova u koje se dodaju/oduzimaju(push/pop) cvorovi grafa
+    // B, niz skupova u koje se dodaju/oduzimaju(push/pop) cvorovi grafa
     std::list<int> B[M];
-    // Flag NO_INDEX oznacava da cvor nije u Buketu
+    // Flag NO_INDEX oznacava da cvor nije u B
     const int NO_INDEX = -1;
-    // b[v] predstavlja indeks cvora v u Buketu
+    // b[v] predstavlja indeks cvora v u B tj. b]v] oznacava da se cvor v nalazi u skupu B[b[v]]
     std::vector<int> b(g.size(), NO_INDEX);
-    // f[v] je flag koji oznacava da li je cvor v izbacen(pop) iz Buketa
+    // f[v] je flag koji oznacava da li je cvor v izbacen(pop) iz B
     std::vector<bool> f(g.size(), false);
-    // addr cuva adresu elementa liste u Buketu kao bi element liste mogao da se obrse u O(1)
+    // addr cuva adresu elementa liste u B kako bi elementu liste pristupili u O(1)
     std::list<int>::iterator addr[g.size()];
 
     // Oznaci src
