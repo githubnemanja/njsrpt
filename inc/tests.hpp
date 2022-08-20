@@ -5,10 +5,6 @@
 #include "graph.hpp"
 
 void generate(Graph& g, int m, bool directed);
-void generateRandomV2DirectedEdges(Graph& g);
-void generateRandomV2UndirectedEdges(Graph& g);
-void generateRandomOVDirectedEdges(Graph& g);
-void generateRandomOVUndirectedEdges(Graph& g);
 void generateConstantO1Edges(Graph& g);
 void generateConstantOVEdges(Graph& g);
 
