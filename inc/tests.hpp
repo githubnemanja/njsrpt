@@ -4,7 +4,7 @@
 #include "time.h"
 #include "graph.hpp"
 
-void generate(Graph& g, int m, bool directed);
+void generateEdges(Graph& g, int m, bool directed);
 void generateConstantO1Edges(Graph& g);
 void generateConstantOVEdges(Graph& g);
 

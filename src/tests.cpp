@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------------------------------------------------
 
 // Dodaje m random grana u graf g i postavlja direcred polje
-void generate(Graph& g, int m, bool directed){
+void generateEdges(Graph& g, int m, bool directed){
     std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
     std::uniform_int_distribution<int> edges_distribution(0, (g.size()*g.size())/m-1);
