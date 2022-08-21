@@ -476,7 +476,6 @@ int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::v
         }
         U--;
     }
-    // ovo ne bi trebalo nikad da vrati
-    std::cout << "[ERROR] Wrong return!" << std::endl;
+    // kada d nije dostizan
     return INT_MIN;
 }
