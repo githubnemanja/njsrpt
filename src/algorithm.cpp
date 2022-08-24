@@ -213,8 +213,6 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
         return {};
     }
 
-    int minEdge = INT_MAX;
-    int maxEdge = INT_MIN;
     std::vector<EdgeId> edges;
 
     // Sacuvati trenutne grane grafa u edges
@@ -222,20 +220,14 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
     for(int i = 0; i < g.size(); ++i){
         for(auto & edge : g[i]){
             edges.push_back({i, edge.dest, edge.weight, &edge});
-            if(minEdge > edge.weight){
-                minEdge = edge.weight;
-            }
-            if(maxEdge < edge.weight){
-                maxEdge = edge.weight;
-            }
         }
     }
 
     int iterationCount = 0;
-    int L = minEdge;
-    int R = maxEdge;
+    int L = INT_MIN;
+    int R = INT_MAX;
     int k = log2(edges.size());
-    while(iterationCount < k){
+    while(edges.size() > 0 && iterationCount < log2(k)){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
         if(g.connected(src, dest, M + 1)){
             std::vector<EdgeId> new_edges;
@@ -248,6 +240,13 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
             L = M;
         }
         else{
+            std::vector<EdgeId> new_edges;
+            for(auto eid : edges){
+                if(eid.weight <= M){
+                    new_edges.push_back(eid);
+                }
+            }
+            edges = new_edges;
             R = M;
         }
         iterationCount++;
