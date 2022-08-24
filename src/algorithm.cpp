@@ -230,23 +230,11 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
     while(edges.size() > 0 && iterationCount < log2(k)){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
         if(g.connected(src, dest, M + 1)){
-            std::vector<EdgeId> new_edges;
-            for(auto eid : edges){
-                if(eid.weight > M){
-                    new_edges.push_back(eid);
-                }
-            }
-            edges = new_edges;
+            edges.erase(std::remove_if(edges.begin(), edges.end(), [M](auto edge){return edge.weight <= M;}), edges.end());
             L = M;
         }
         else{
-            std::vector<EdgeId> new_edges;
-            for(auto eid : edges){
-                if(eid.weight <= M){
-                    new_edges.push_back(eid);
-                }
-            }
-            edges = new_edges;
+            edges.erase(std::remove_if(edges.begin(), edges.end(), [M](auto edge){return edge.weight > M;}), edges.end());
             R = M;
         }
         iterationCount++;
