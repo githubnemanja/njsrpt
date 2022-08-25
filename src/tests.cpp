@@ -8,6 +8,7 @@
 #include "graph.hpp"
 #include "algorithm.hpp"
 
+#define PRINT_TEST 0
 
 // -----------------------------------------------------------------------------------------------------------------------
 // Definicije lokalnih funkcija
@@ -92,8 +93,9 @@ bool check_result(const Graph& g, int src, int dest, const Path& path, int& bott
 double printTimeSpecs(std::string name, struct timespec time_s, struct timespec time_e){
     double duration = (double)(time_e.tv_nsec - time_s.tv_nsec) / 1000000.0 +
                       (double)(time_e.tv_sec - time_s.tv_sec) * 1000.0;
-
-    //std::cout << "[" << name << "]" << " [ms]:" << duration << " ";
+#if PRINT_TEST
+    std::cout << "[" << name << "]" << " [ms]:" << duration << " ";
+#endif
     return duration;
 }
 
@@ -110,9 +112,11 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     int prevbottleneck;
     bool result = true;
 
-    //std::cout << "--------------------------------" << std::endl;
-    //std::cout << "[runTests] src=" << src << ", dest=" << dest << std::endl;
-    //std::cout << "--------------------------------" << std::endl;
+#if PRINT_TEST
+    std::cout << "--------------------------------" << std::endl;
+    std::cout << "[runTests] src=" << src << ", dest=" << dest << std::endl;
+    std::cout << "--------------------------------" << std::endl;
+#endif
 
     if(incbf){
         clock_gettime(CLOCK_MONOTONIC, &time_s);
@@ -120,11 +124,13 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         clock_gettime(CLOCK_MONOTONIC, &time_e);
         duration = printTimeSpecs("widestPathBruteForce", time_s, time_e);
         times.push_back(duration);
-        //printPath(path);
+        printPath(path);
         result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
     }
     else{
-        //std::cout << "[widestPathBruteForce] [not executed] " << std::endl;
+#if PRINT_TEST
+        std::cout << "[widestPathBruteForce] [not executed] " << std::endl;
+#endif
         times.push_back(0);
     }
 
@@ -133,7 +139,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathDijkstra", time_s, time_e);
     times.push_back(duration);
-    //printPath(path);
+    printPath(path);
     result = check_result(g, src, dest, path, bottleneck, incbf ? false : true) ? result : false;
 
     clock_gettime(CLOCK_MONOTONIC, &time_s);
@@ -141,7 +147,7 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathMedianEdgeWeight", time_s, time_e);
     times.push_back(duration);
-    //printPath(path);
+    printPath(path);
     result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
 
     if(g.isDirected() == false){
@@ -150,11 +156,13 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
         clock_gettime(CLOCK_MONOTONIC, &time_e);
         duration = printTimeSpecs("widestPathInUndirectedGraph", time_s, time_e);
         times.push_back(duration);
-        //printPath(path);
+        printPath(path);
         result = check_result(g, src, dest, path, bottleneck, true) ? result : false;
     }
     else{
+#if PRINT_TEST
         std::cout << "[widestPathInUndirectedGraph] [not executed] " << std::endl;
+#endif
         times.push_back(0);
     }
 
@@ -163,16 +171,19 @@ bool runTests(Graph& g, int src, int dest, std::vector<double>& times, bool incb
     clock_gettime(CLOCK_MONOTONIC, &time_e);
     duration = printTimeSpecs("widestPathEdgesOrdering", time_s, time_e);
     times.push_back(duration);
-    //printPath(path);
+    printPath(path);
     result = check_result(g, src, dest, path, bottleneck, false) ? result : false;
 
+#if PRINT_TEST    
     if(result){
-        //std::cout << "[success]" << std::endl;
+        std::cout << "[success]" << std::endl;
     }
     else{
-        //std::cout << "[ERROR][TEST FAILED]" << std::endl;
+        std::cout << "[ERROR][TEST FAILED]" << std::endl;
     }
-    //std::cout << "--------------------------------" << std::endl;
+    std::cout << "--------------------------------" << std::endl;
+#endif
+
     return result;
 }
 

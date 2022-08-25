@@ -4,6 +4,8 @@
 #include <iterator>
 #include "graph.hpp"
 
+#define PRINT_PATH 0
+
 // -----------------------------------------------------------------------------------------------------------------------
 // Definicije osnovnih funkcionalnosti klase Graph
 // -----------------------------------------------------------------------------------------------------------------------
@@ -450,6 +452,7 @@ void swap(EdgeId& e1, EdgeId& e2){
 // -----------------------------------------------------------------------------------------------------------------------
 
 void printPath(const Path& p){
+#if PRINT_PATH
     bool fst = true;
     std::cout << "[path]:";
     for(auto i = p.begin(); i != p.end(); ++i){
@@ -462,6 +465,7 @@ void printPath(const Path& p){
         std::cout << *i;
     }
     std::cout << std::endl;
+#endif
 }
 
 std::string Edge::toString() const{
