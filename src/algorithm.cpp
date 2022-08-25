@@ -176,7 +176,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     Graph gc(g);
 
     // Odrediti grane grafa
-    gc.getEdgeIds(edges);
+    gc.getEdges(src, edges);
 
     while(gc.size() > 1 && !edges.empty()){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
@@ -197,7 +197,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
         }
         // odredi grane izmenjenog grafa
         edges.clear();
-        gc.getEdgeIds(edges);
+        gc.getEdges(_src, edges);
     }
     // Na osnovu bottleneck pronaci put u grafu
     Path path;
@@ -216,18 +216,14 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
     std::vector<EdgeId> edges;
 
     // Sacuvati trenutne grane grafa u edges
-    // Odrediti mininalnu i maksimalnu granu grafa
-    for(int i = 0; i < g.size(); ++i){
-        for(auto & edge : g[i]){
-            edges.push_back({i, edge.dest, edge.weight, &edge});
-        }
-    }
+    g.getEdges(src, edges);
 
     int iterationCount = 0;
     int L = INT_MIN;
     int R = INT_MAX;
-    int k = log2(edges.size());
-    while(edges.size() > 0 && iterationCount < log2(k)){
+    double k = edges.size() > 1 ? log2(edges.size()) : 0;
+    double logk = k > 1 ? log2(k) : 0;
+    while(edges.size() > 0 && iterationCount < logk){
         int M = median_of_medians(edges, edges.size(), edges.size()/2);
         if(g.connected(src, dest, M + 1)){
             edges.erase(std::remove_if(edges.begin(), edges.end(), [M](auto edge){return edge.weight <= M;}), edges.end());

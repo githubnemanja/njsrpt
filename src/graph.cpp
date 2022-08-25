@@ -87,30 +87,21 @@ void Graph::getEdgeIds(std::vector<EdgeId>& edges) const{
 }
 
 // Funkcija getEdgesDFS se koristi kao pomocna za connected i predstavlja obilazak grafa u dubinu
-void Graph::getEdgesDFS(int src, std::vector<bool>& visited , std::vector<EdgeId>& edges, int& minEdge, int& maxEdge) const{
+void Graph::getEdgesDFS(int src, std::vector<bool>& visited , std::vector<EdgeId>& edges){
     visited[src] = true;
-    std::cout << src << std::endl;
-
     for(auto & cur : adj[src]){
-        edges.push_back({src, cur.dest, cur.weight});
-        if(cur.weight < minEdge){
-            minEdge = cur.weight;
-        }
-        if(cur.weight > maxEdge){
-            maxEdge = cur.weight;
-        }
+        edges.push_back({src, cur.dest, cur.weight, &cur});
         // obrada neoznacenih suseda cvora src
         if(visited[cur.dest] == false){
-            getEdgesDFS(cur.dest, visited, edges, minEdge, maxEdge);
+            getEdgesDFS(cur.dest, visited, edges);
         }
     }
 }
 
 // Funkcija getEdges vraca sve grane grafa koje su dostizne iz src. Rezultat cuva u strukturi edges.
-// Funkcija racuna i najmanju i najvecu granu od dostiznih grana grafa iz src.
-void Graph::getEdges(int src, std::vector<EdgeId>& edges, int& minEdge, int& maxEdge) const{
+void Graph::getEdges(int src, std::vector<EdgeId>& edges){
     std::vector<bool> visited(size(), false);
-    getEdgesDFS(src, visited, edges, minEdge, maxEdge);
+    getEdgesDFS(src, visited, edges);
 }
 
 // -----------------------------------------------------------------------------------------------------------------------
