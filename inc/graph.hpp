@@ -57,16 +57,15 @@ struct CompareEdgeIds{
 
 class Graph{
     public:
-    Graph(int size);
+    Graph(int size, bool directed);
     Graph(const Graph& g);
 
     int size() const;
     bool isDirected() const;
-    void setDirected(bool directed);
     std::vector<Edge>& operator[] (int index);
     const std::vector<Edge>& operator[] (int index) const;
 
-    void addEdge(int src, int dest, int weight);
+    bool addEdge(int src, int dest, int weight);
     void getEdgeIds(std::vector<EdgeId>& edges) const;
     void getEdges(int src, std::vector<EdgeId>& edges);
     int deleteEdges(int bottleneck);

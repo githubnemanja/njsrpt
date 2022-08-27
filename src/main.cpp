@@ -30,8 +30,8 @@ int main(){
 
     int success = 0;
     for(int i = 0; i < NUM_OF_TESTS; ++i){
-        Graph g(INPUT_SIZE);
-        generateEdges(g, NUM_OF_EDGES, false);
+        Graph g(INPUT_SIZE, false);
+        generateEdges(g, NUM_OF_EDGES);
         std::vector<double> times;
         success += runTests(g, 0, 1, times, false) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);

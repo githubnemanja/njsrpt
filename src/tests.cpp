@@ -15,29 +15,23 @@
 // -----------------------------------------------------------------------------------------------------------------------
 
 // Dodaje m random grana u graf g i postavlja direcred polje
-void generateEdges(Graph& g, int m, bool directed){
+void generateEdges(Graph& g, int m){
     std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
     std::uniform_int_distribution<int> edges_distribution(0, (g.size()*g.size())/m-1);
     int goal = ((g.size()*g.size())/m-1) > 0 ? std::rand() % ((g.size()*g.size())/m-1) : 0;
-
-    g.setDirected(directed);
 
     for(int i = 0; i < g.size(); ++i){
         for(int j = 0; j < g.size(); ++j){
             if(i != j && edges_distribution(generator) == goal){
                 int weight = weights_distribution(generator);
                 g.addEdge(i, j, weight);
-                if(!directed){
-                    g.addEdge(j, i, weight);
-                }
             }
         }
     }
 }
 
 void generateConstantO1Edges(Graph& g){
-    g.setDirected(true);
     if(g.size() < 5){
         return;
     }
@@ -51,7 +45,6 @@ void generateConstantO1Edges(Graph& g){
 }
 
 void generateConstantOVEdges(Graph& g){
-    g.setDirected(true);
     for(int i = 2; i < g.size(); ++i){
         g.addEdge(i, i - 1, 10);
     }

@@ -10,8 +10,9 @@
 // Definicije osnovnih funkcionalnosti klase Graph
 // -----------------------------------------------------------------------------------------------------------------------
 
-Graph::Graph(int size){
+Graph::Graph(int size, bool directed){
     adj.resize(size);
+    this->directed = directed;
 }
 
 Graph::Graph(const Graph& g){
@@ -27,10 +28,6 @@ bool Graph::isDirected() const{
     return directed;
 }
 
-void Graph::setDirected(bool directed){
-    this->directed = directed;
-}
-
 std::vector<Edge>& Graph::operator[] (int index){
     return adj[index];
 }
@@ -39,17 +36,22 @@ const std::vector<Edge>& Graph::operator[] (int index) const{
     return adj[index];
 }
 
-// Dodaj granu (src, dest) tezine weight u graf
-void Graph::addEdge(int src, int dest, int weight){
-    if(src < size()){
-        for(auto & cur : adj[src]){
-            if(cur.dest == dest){
-                //grana vec postoji
-                return;
-            }
+// Ako grana (src, dest) postoji u grafu vraca false
+// Ako grana ne postoji u grafu dodaje granu (src, dest) tezine weight u graf i vraca true
+// Podrazumeva se da su src i dest u intervalu [0, size())
+bool Graph::addEdge(int src, int dest, int weight){
+    for(auto & cur : adj[src]){
+        if(cur.dest == dest){
+            //grana vec postoji
+            return false;
         }
-        adj[src].push_back({dest, weight});
     }
+    adj[src].push_back({dest, weight});
+    // ako je graf neusmeren dodaj i suprotnu granu
+    if(!directed){
+        adj[dest].push_back({src, weight});
+    }
+    return true;
 }
 
 // Obrisati sve grane u grafu cija je tezina manja od bottleneck i vratiti broj obrisanih grana
