@@ -46,6 +46,11 @@ void generateEdges(Graph& g, int m){
     std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
 
+    int upper_bound = g.size() * (g.size() - 1) / 2;
+    if(m > upper_bound){
+        m = upper_bound;
+    }
+
     int edges_num = 0;
     while(edges_num < m){
         int u, v, weight;
