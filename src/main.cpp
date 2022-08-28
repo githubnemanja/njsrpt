@@ -37,7 +37,7 @@ int main(){
         generateGroup(g, TEST_GROUP);
         generateVertices(INPUT_SIZE, src, dest);
         std::vector<double> times;
-        success += runTests(g, 0, 1, times, incbf) ? 1 : 0;
+        success += runTests(g, src, dest, times, incbf) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
     }
 
