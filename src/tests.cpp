@@ -7,26 +7,52 @@
 #include <iomanip>
 #include "graph.hpp"
 #include "algorithm.hpp"
+#include "tests.hpp"
 
+// Ako je PRINT_TEST flag jednak 1 stampa se rezultat svakog testa, ako je PRINT_TEST jednak 0 stampa se samo ukupan rezultat
 #define PRINT_TEST 0
 
 // -----------------------------------------------------------------------------------------------------------------------
 // Definicije lokalnih funkcija
 // -----------------------------------------------------------------------------------------------------------------------
 
-// Dodaje m random grana u graf g i postavlja direcred polje
+// Bira 2 razlicita cvora iz grafa velicine size i smesta ih u src i dest
+void generateVertices(int size, int& src, int& dest){
+    std::default_random_engine generator(std::random_device{}());
+    std::uniform_int_distribution<int> vertices_distribution(0, size - 1);
+
+    src = vertices_distribution(generator);
+    dest = vertices_distribution(generator);
+    while(src == dest){
+        dest = vertices_distribution(generator);
+    }
+}
+
+// Generise grupu uzorka group
+void generateGroup(Graph& g, int group){
+    if(group == 1){
+        generateEdges(g, g.size());
+    }
+    else if(group == 2){
+        generateEdges(g, g.size() * log2(g.size()));
+    }
+    else if(group == 3){
+        generateEdges(g, g.size() * (g.size() - 1) / 3);
+    }
+}
+
+// Dodaje O(m) random grana u graf g i postavlja directed polje
 void generateEdges(Graph& g, int m){
     std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
-    std::uniform_int_distribution<int> edges_distribution(0, (g.size()*g.size())/m-1);
-    int goal = ((g.size()*g.size())/m-1) > 0 ? std::rand() % ((g.size()*g.size())/m-1) : 0;
 
-    for(int i = 0; i < g.size(); ++i){
-        for(int j = 0; j < g.size(); ++j){
-            if(i != j && edges_distribution(generator) == goal){
-                int weight = weights_distribution(generator);
-                g.addEdge(i, j, weight);
-            }
+    int edges_num = 0;
+    while(edges_num < m){
+        int u, v, weight;
+        generateVertices(g.size(), u, v);
+        weight = weights_distribution(generator);
+        if(g.addEdge(u, v, weight)){
+            ++edges_num;
         }
     }
 }

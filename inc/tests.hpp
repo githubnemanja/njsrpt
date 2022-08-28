@@ -4,6 +4,8 @@
 #include "time.h"
 #include "graph.hpp"
 
+void generateVertices(int size, int& src, int& dest);
+void generateGroup(Graph& g, int group);
 void generateEdges(Graph& g, int m);
 void generateConstantO1Edges(Graph& g);
 void generateConstantOVEdges(Graph& g);

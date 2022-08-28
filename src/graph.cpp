@@ -4,6 +4,7 @@
 #include <iterator>
 #include "graph.hpp"
 
+// Ako je PRINT_PATH jednak 1 stampa se dobijen put na kraju izvrsavanja svakog algoritam, ako je jednak 0 ne stampa se
 #define PRINT_PATH 0
 
 // -----------------------------------------------------------------------------------------------------------------------

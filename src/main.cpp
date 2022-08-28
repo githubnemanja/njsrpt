@@ -6,12 +6,14 @@
 
 // Ako je DEBUG flag jednak 0 stampa se na standardni izlaz, ako je jednak 1 stampa se u fajl out.txt
 #define DEBUG 0
+// Ako je incbf flag jednak 0 ne testira se widestPathBruteForce, ako je incbf jednak 1 testira se i taj algoritam
+#define incbf 0
 
 // Prilikom izvrsavanja testova potrebno je postaviti parametre:
-// NUM_OF_TESTS: broj ulaznih instanci, INPUT_SIZE: broj cvorova ulaza, NUM_OF_EDGES: broj grana ulaza
+// NUM_OF_TESTS: broj ulaznih instanci, INPUT_SIZE: broj cvorova ulaza, TEST_GROUP: grupa uzoraka (1, 2 ili 3)
 const int NUM_OF_TESTS = 100;
-const int INPUT_SIZE  = 10;
-const int NUM_OF_EDGES  = 100;
+const int INPUT_SIZE  = 1000;
+const int TEST_GROUP  = 1;
 
 int main(){
     std::vector<std::pair<std::string, std::tuple<double, double, double>>> avgs{
@@ -30,10 +32,12 @@ int main(){
 
     int success = 0;
     for(int i = 0; i < NUM_OF_TESTS; ++i){
+        int src, dest;
         Graph g(INPUT_SIZE, false);
-        generateEdges(g, NUM_OF_EDGES);
+        generateGroup(g, TEST_GROUP);
+        generateVertices(INPUT_SIZE, src, dest);
         std::vector<double> times;
-        success += runTests(g, 0, 1, times, false) ? 1 : 0;
+        success += runTests(g, 0, 1, times, incbf) ? 1 : 0;
         updateAvgs(avgs, times, NUM_OF_TESTS);
     }
 
