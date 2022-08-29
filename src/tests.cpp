@@ -41,7 +41,7 @@ void generateGroup(Graph& g, int group){
     }
 }
 
-// Dodaje O(m) random grana u graf g i postavlja directed polje
+// Dodaje O(m) random grana u graf g
 void generateEdges(Graph& g, int m){
     std::default_random_engine generator(std::random_device{}());
     std::uniform_int_distribution<int> weights_distribution(INT_MIN + 1, INT_MAX - 1);
