@@ -7,5 +7,5 @@ Set PRINT_TEST to 1 to print result for each test. Number of test to be executed
 Set PRINT_PATH to 1 to print result path of each executed algorithm.
 
 To compile and run program execute:
-./runs.sh
+./run.sh
 
