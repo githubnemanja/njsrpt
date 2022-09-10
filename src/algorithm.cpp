@@ -240,7 +240,7 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
     T[0] = INT_MIN;
     T[edges.size() + 1] = INT_MAX;
 
-    std::sort(edges.begin(), edges.end(), [](EdgeId e1, EdgeId e2){
+    std::sort(edges.begin(), edges.end(), [](const EdgeId& e1, const EdgeId& e2){
         return e1.weight < e2.weight;
     });
 
