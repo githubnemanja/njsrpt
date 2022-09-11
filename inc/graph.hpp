@@ -8,7 +8,7 @@
 
 typedef  std::deque<int> Queue;
 
-typedef  std::deque<int> Path;
+typedef  std::vector<int> Path;
 
 // Koristi se u listi susedstava cvora grafa
 // Uredjeni par (src, dest, weigh) oznacava granu od cvora src do cvora dest, tezine weight

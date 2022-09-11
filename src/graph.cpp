@@ -122,10 +122,10 @@ void formPath(int src, int dest, const std::vector<int>& pred, Path& path){
         return;
     }
     while(dest != src){
-        path.push_front(dest);
+        path.push_back(dest);
         dest = pred[dest];
     }
-    path.push_front(src);
+    path.push_back(src);
 }
 
 // @thesis postojiPutDFS
@@ -388,7 +388,7 @@ void Graph::shrink(const std::vector<int>& comp, int comp_size){
 // Ako put ne postoji return je false
 // Ovaj funkcija se koristi za proveru ispravnosti algoritma
 bool Graph::getMinEdge(const Path& path, int& min_edge) const{
-    int src = path.front();
+    int src = path.back();
     int dest;
     int min = INT_MAX;
 
@@ -396,7 +396,7 @@ bool Graph::getMinEdge(const Path& path, int& min_edge) const{
         return false;
     }
 
-    for(auto i = path.begin() + 1; i != path.end(); ++i){
+    for(auto i = path.crbegin() + 1; i != path.crend(); ++i){
         bool edge_exists = false;
         dest = *i;
         // obrada susednih grana cvora src
@@ -458,7 +458,7 @@ void printPath(const Path& p){
 #if PRINT_PATH
     bool fst = true;
     std::cout << "[path]:";
-    for(auto i = p.begin(); i != p.end(); ++i){
+    for(auto i = p.crbegin(); i != p.crend(); ++i){
         if(fst){
             fst = false;
         }
