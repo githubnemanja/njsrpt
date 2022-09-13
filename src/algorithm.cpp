@@ -18,7 +18,7 @@ struct timespec time_s, time_e;
 
 void maxminBruteForceHelper(const Graph& g, int src, int dest, std::vector<bool>& visited, int minEdge, int& maxmin);
 int maxminBruteForce(const Graph& g, int src, int dest);
-int median_of_medians(std::vector<EdgeId>& edges, int n , int k);
+int median(std::vector<EdgeId>& edges);
 int bottleneckSortedEdges(const Graph& g, int src, int dest, int M, const std::vector<int>& T);
 Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottleneck);
 
@@ -179,7 +179,7 @@ Path widestPathInUndirectedGraph(const Graph& g, int src, int dest){
     gc.getEdges(src, edges);
 
     while(gc.size() > 1 && !edges.empty()){
-        int M = median_of_medians(edges, edges.size(), edges.size()/2);
+        int M = median(edges);
         if(gc.connected(_src, _dest, M)){
             // ako put (u podgrafu) postoji zapamti M kao trenutni kapacitet najsireg puta
             bottleneck = M;
@@ -224,7 +224,7 @@ Path widestPathEdgesOrdering(Graph& g, int src, int dest){
     double k = edges.size() > 1 ? log2(edges.size()) : 0;
     double logk = k > 1 ? log2(k) : 0;
     while(edges.size() > 0 && iterationCount < logk){
-        int M = median_of_medians(edges, edges.size(), edges.size()/2);
+        int M = median(edges);
         if(g.connected(src, dest, M + 1)){
             edges.erase(std::remove_if(edges.begin(), edges.end(), [M](auto edge){return edge.weight <= M;}), edges.end());
             L = M;
@@ -318,85 +318,14 @@ Path widestPathKnowingBottleneck(const Graph& g, int src, int dest, int bottlene
     return path;
 }
 
-// Funkcija median_of_medians vraca k-ti po velicini element vektora edges.
-// Posmatra se samo deo vektora od indeksa 0 do indeksa n.
-int median_of_medians(std::vector<EdgeId>& edges, int n , int k){
-    int i = 0;
-    int j = 0;
-    int pivot = 0;
-    int low = 0;
-    int high = 0;
-    CompareEdgeIds compare;
-
-    if(n <= 5){
-        std::sort(edges.begin(), edges.begin() + n, compare);
-        pivot = edges[n/2].weight;
-    }
-    else{
-        while(i < n && j + 4 < n){
-            std::sort(edges.begin() + j, edges.begin() + j + 5, compare);
-            swap(edges[i], edges[j + 2]);
-            ++i;
-            j+=5;
-        }
-
-        while(i < n && j < n){
-            swap(edges[i], edges[j]);
-            ++i;
-            ++j;
-        }
-
-        pivot = median_of_medians(edges, i, i/2);
-    }
-    
-    for(i = 0; i < n; ++i){
-        if(edges[i].weight < pivot){
-            ++low;
-        }
-        else if(edges[i].weight > pivot){
-            ++high;
-        }
-    }
-
-    if(k < low){
-        i = 0;
-        j = n - 1;
-        while(i < j){
-            while(i < n && edges[i].weight < pivot){
-                ++i;
-            }
-            while(j >=0 && edges[j].weight >= pivot){
-                --j;
-            }
-            if(i < j){
-                swap(edges[i], edges[j]);
-                ++i;
-                --j;
-            }
-        }
-        return median_of_medians(edges, low, k);
-    }
-    else if(k >= n - high){
-        i = 0;
-        j = n - 1;
-        while(i < j){
-            while(i < n && edges[i].weight > pivot){
-                ++i;
-            }
-            while(j >=0 && edges[j].weight <= pivot){
-                --j;
-            }
-            if(i < j){
-                swap(edges[i], edges[j]);
-                ++i;
-                --j;
-            }
-        }
-        return median_of_medians(edges, high, k - (n - high));
-    }
-    else{
-        return pivot;
-    }
+// Funkcija median izracunava medijanu vektora edges.
+// Elementi vektora se uporedjuju po polju weight.
+int median(std::vector<EdgeId>& edges){
+    std::nth_element(edges.begin(), edges.begin() + edges.size()/2, edges.end(),
+                    [](const EdgeId& e1, const EdgeId& e2){
+                        return e1.weight < e2.weight;
+                    });
+    return (edges[edges.size()/2]).weight;
 }
 
 // Funkcija bottleneckSortedEdges vraca bottleneck tj. najmanju granu najsireg puta
